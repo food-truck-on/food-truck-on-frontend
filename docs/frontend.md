@@ -57,6 +57,7 @@ App Router와 충돌한다. 라우트 화면은 전부 `src/app/` 아래에 둔�
 | `/owner/*` | `app/owner/…` | 사장님 화면. 로그인 필수 |
 | `/nearby` | `app/nearby/page.tsx` | 손님 — 주변 트럭 목록 |
 | `/t/:slug` | `app/t/[slug]/page.tsx` | **공유 링크로 들어오는 단일 트럭 페이지. 로그인 불필요** |
+| `/dev/components` | `app/dev/components/page.tsx` | 공통 컴포넌트·토큰 확인용. **개발 전용 — 배포 전 폴더째 지운다** |
 
 `/t/:slug`는 이 서비스의 핵심 진입점이다. 다른 화면에 의존하지 않고 단독으로 완결돼야 한다.
 

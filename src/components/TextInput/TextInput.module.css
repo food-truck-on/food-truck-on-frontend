@@ -1,0 +1,87 @@
+/*
+ * 입력창 테두리를 진하게 올리지 않는다. docs/design-system.md의 판단(2026-09-08).
+ * --border-strong(#cccccc)은 흰 배경 대비 1.6:1로 WCAG 1.4.11의 3:1에 미달하지만,
+ * 1.4.11은 테두리가 컨트롤을 식별하는 *유일한* 수단일 때만 3:1을 요구한다.
+ * 그래서 아래 셋으로 식별성을 확보한다.
+ *   1. 면(배경색)으로 구분 — .onPage / .onCard
+ *   2. 라벨 필수 — label prop이 필수라 타입으로 강제된다
+ *   3. 포커스 --border-focus 2px (#c2410c, 5.18:1)
+ */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font: var(--font-caption);
+  color: var(--text-secondary);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: var(--space-3);
+
+  font: var(--font-body);
+  color: var(--text-default);
+
+  border: 1px solid var(--border-strong);
+  border-radius: var(--space-3);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+/*
+ * 면으로 구분한다. 부모 배경과 반대되는 면을 깐다.
+ * 페이지 배경(--bg-page) 위면 입력창은 --bg-surface,
+ * 카드(--bg-surface) 위면 입력창은 --bg-page.
+ */
+.onPage .input {
+  background: var(--bg-surface);
+}
+
+.onCard .input {
+  background: var(--bg-page);
+}
+
+/* 포커스에 --brand-primary를 쓰지 마라. 흰 배경 대비 2.8:1로 3:1 미달이다 */
+.input:focus {
+  border-color: var(--border-focus);
+  border-width: 2px;
+  /* 테두리가 굵어지면서 글자가 밀리지 않게 padding을 1px 덜어낸다 */
+  padding: calc(var(--space-3) - 1px);
+  outline: none;
+}
+
+.input:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+  background: var(--bg-page);
+}
+
+/*
+ * 상태를 색으로만 표현하지 않는다. 아래 .message 텍스트가 항상 함께 뜬다.
+ *
+ * ⚠ 토큰 목록에 오류(danger) 색이 없다. 임시로 --brand-primary-text를 쓰고 있는데,
+ *   이 색은 --border-focus와 같은 값(#c2410c)이라 **오류와 포커스가 구별되지 않는다.**
+ *   글자 메시지로는 구별되지만 테두리만 보면 같다. 오류 색 토큰을 추가할지 정해야 한다.
+ *   새 색을 만드는 건 디자인 결정이라 임의로 넣지 않았다.
+ */
+.error .input {
+  border-color: var(--brand-primary-text);
+  border-width: 2px;
+  padding: calc(var(--space-3) - 1px);
+}
+
+.message {
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+
+.error .message {
+  color: var(--brand-primary-text);
+}

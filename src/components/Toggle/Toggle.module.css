@@ -1,0 +1,85 @@
+/*
+ * 보이는 스위치는 작지만 히트 영역은 44×44px을 채운다.
+ * 야외 햇빛 아래 한 손으로 쓰는 앱이라 터치 영역이 특히 중요하다.
+ */
+.wrap {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+
+  /* 라벨까지 눌러서 켜지도록 전체를 버튼으로 만든다 */
+  min-height: var(--touch-target-min);
+  padding: 0;
+
+  text-align: left;
+}
+
+.wrap:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.track {
+  position: relative;
+  flex-shrink: 0;
+
+  /* 44px 히트 영역은 .wrap이 확보한다. 스위치 자체는 보이는 크기만 */
+  width: var(--space-7);
+  height: var(--space-5);
+
+  background: var(--border-strong);
+  border-radius: var(--space-5);
+
+  transition: background-color 0.15s ease;
+}
+
+.on .track {
+  background: var(--brand-primary);
+}
+
+.knob {
+  position: absolute;
+  top: var(--space-1);
+  left: var(--space-1);
+
+  width: var(--space-4);
+  height: var(--space-4);
+
+  background: var(--bg-surface);
+  border-radius: 50%;
+
+  transition: transform 0.15s ease;
+}
+
+.on .knob {
+  /* 트랙 48px − 손잡이 16px − 여백 4px×2 = 24px 이동 */
+  transform: translateX(var(--space-5));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .knob {
+    transition: none;
+  }
+}
+
+/*
+ * 상태를 색으로만 표현하지 마라. 켜짐/꺼짐을 글자로도 알린다.
+ * 텍스트가 길어져도 밀리지 않게 flex로 늘어나게 둔다.
+ */
+.label {
+  flex: 1;
+  min-width: 0;
+  font: var(--font-body);
+  color: var(--text-default);
+}
+
+.state {
+  flex-shrink: 0;
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+
+.on .state {
+  color: var(--brand-primary-text);
+}

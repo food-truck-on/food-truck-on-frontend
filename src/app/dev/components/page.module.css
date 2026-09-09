@@ -1,0 +1,79 @@
+.page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--space-4) var(--space-7);
+}
+
+.pageTitle {
+  font: var(--font-display);
+  color: var(--text-default);
+}
+
+.pageNote {
+  margin-top: var(--space-2);
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  font: var(--font-title);
+  color: var(--text-default);
+}
+
+.groupTitle {
+  font: var(--font-label);
+  color: var(--brand-primary-text);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* 카드 위에 놓았을 때 입력창이 어떻게 보이는지 확인하는 자리 */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--space-4);
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: flex-end;
+
+  width: var(--space-7);
+  height: var(--space-7);
+  padding: var(--space-1);
+
+  font: var(--font-label);
+  color: var(--text-muted);
+
+  border: 1px solid var(--border-default);
+  border-radius: var(--space-2);
+}
+
+.typeRow {
+  color: var(--text-default);
+}
