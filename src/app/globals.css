@@ -1,0 +1,137 @@
+@import "../styles/tokens.css";
+
+/*
+ * 전역 리셋 + 웹뷰 대응
+ * 색·간격·글자 크기는 반드시 토큰으로 쓴다. 여기서도 예외 없다.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* 다크 모드를 만들지 않는다. 앱인토스 미니앱이 지원하지 않는다.
+     이 선언이 없으면 OS 다크 모드에서 브라우저가 폼 컨트롤을 어둡게 칠한다. */
+  color-scheme: light;
+
+  height: 100%;
+
+  /* iOS 웹뷰 고무줄 스크롤로 배경이 드러나지 않게 한다 */
+  overscroll-behavior-y: none;
+
+  /* 사용자가 OS 글자 크기를 키워도 레이아웃이 무너지지 않게 한다 */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+
+  font: var(--font-body);
+  color: var(--text-default);
+  background: var(--bg-page);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* 웹뷰에서 길게 눌렀을 때 뜨는 텍스트 선택·콜아웃을 막는다 */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/*
+ * 주아체는 Regular 한 가지 굵기뿐이다.
+ * <strong> <b> <h1~h6>의 기본 굵기를 강제로 지운다. 두면 가짜 굵기가 적용된다.
+ * 위계는 크기와 색으로만 만든다.
+ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b,
+th,
+optgroup {
+  font-weight: normal;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+}
+
+/* 폼 요소는 폰트를 상속하지 않는다. 명시하지 않으면 여기만 시스템 폰트로 나온다 */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* 터치 영역 최소 44×44px */
+button,
+a[role="button"],
+input[type="checkbox"],
+input[type="radio"] {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* 포커스는 --border-focus로. 마우스 클릭에는 링을 띄우지 않는다 */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * 화면 컨테이너
+ * 기준 폭 393px, 최소 지원 폭 360px. 고정 폭·고정 높이를 쓰지 말고 flex로 짠다.
+ * 상·하단 안전영역은 여기서 한 번만 처리한다.
+ */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  background: var(--bg-page);
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}

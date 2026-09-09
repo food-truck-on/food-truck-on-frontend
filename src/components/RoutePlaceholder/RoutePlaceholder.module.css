@@ -1,0 +1,23 @@
+.wrap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  justify-content: center;
+  padding: var(--space-5) var(--space-4);
+}
+
+.path {
+  font: var(--font-label);
+  color: var(--brand-primary-text);
+}
+
+.title {
+  font: var(--font-title);
+  color: var(--text-default);
+}
+
+.note {
+  font: var(--font-caption);
+  color: var(--text-muted);
+}

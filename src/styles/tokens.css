@@ -1,0 +1,139 @@
+/*
+ * 디자인 토큰 — 색·간격·글자 크기의 유일한 정의처
+ *
+ * 규칙 (docs/design-system.md)
+ * - 컴포넌트는 **의미 토큰만** 쓴다. 원시 토큰(--orange-500 등)을 직접 참조하지 마라.
+ * - 이 파일 밖에서 hex 값이나 px 숫자를 직접 쓰면 잘못된 코드다.
+ * - 목록에 없는 색이 필요하면 만들지 말고 물어봐라. 새 색을 더하는 건 디자인 결정이다.
+ * - 다크 모드를 만들지 않는다. 라이트 모드 단일 기준이다.
+ *
+ * 2단 구조를 쓰는 이유: 나중에 TDS로 옮길 때 의미 토큰의 우변만 갈아끼우면 끝난다.
+ *   원시 --orange-500: #ff6b35        ← 실제 색값. 여기만 바뀐다
+ *   의미 --brand-primary: var(--orange-500)   ← 컴포넌트는 이것만 쓴다
+ */
+
+:root {
+  /* ---------------------------------------------------------------
+   * 원시(primitive) — 실제 값. 컴포넌트에서 직접 쓰지 마라
+   * --------------------------------------------------------------- */
+
+  --orange-50: #fff4ed;
+  --orange-500: #ff6b35;
+  --orange-700: #c2410c;
+
+  --gray-0: #ffffff;
+  --gray-100: #f5f5f5;
+  --gray-300: #e0e0e0;
+  --gray-400: #cccccc;
+  --gray-600: #666666;
+  --gray-700: #555555;
+  --gray-900: #1a1a1a;
+
+  --green-50: #e8f8e8;
+  --green-600: #2e8b2e;
+
+  --blue-500: #3b82f6;
+
+  /* ---------------------------------------------------------------
+   * 의미(semantic) — 색 15종. 컴포넌트는 이것만 참조한다
+   * --------------------------------------------------------------- */
+
+  /* 브랜드 */
+  --brand-primary: var(--orange-500); /* 주 버튼 배경, 강조 요소 */
+  --brand-primary-subtle: var(--orange-50); /* 연한 배경, 선택 상태 */
+  --brand-primary-text: var(--orange-700); /* 주황색 글자가 필요할 때만 */
+
+  /* #ff6b35를 글자색으로 쓰면 흰 배경 대비 2.8:1로 접근성 기준(4.5:1) 미달이다.
+     주황은 배경으로만 쓰고 그 위에 흰 글씨를 올린다. */
+
+  /* 텍스트 */
+  --text-default: var(--gray-900); /* 본문, 제목. 순수 검정(#000)은 쓰지 않는다 */
+  --text-secondary: var(--gray-700); /* 보조 설명 */
+  --text-muted: var(--gray-600); /* 흐린 라벨 */
+  --text-on-brand: var(--gray-0); /* 주황 배경 위 글자 */
+
+  /* 배경 · 선 */
+  --bg-surface: var(--gray-0); /* 카드, 시트, 모달 배경 */
+  --bg-page: var(--gray-100); /* 페이지 배경 */
+  --border-default: var(--gray-300); /* 구분선, 카드 테두리 */
+  --border-strong: var(--gray-400); /* 입력창 기본 테두리 */
+  --border-focus: var(--orange-700); /* 입력창 포커스 테두리 · 포커스 링 */
+
+  /* 포커스 링에 --brand-primary를 쓰지 마라. 흰 배경 대비 2.8:1로 3:1에 미달한다.
+     --border-focus(#c2410c)는 5.18:1이라 충분하다. */
+
+  /* 상태 */
+  --status-open: var(--green-600); /* "영업 중" 배지 글자 */
+  --status-open-bg: var(--green-50); /* "영업 중" 배지 배경 */
+  --info: var(--blue-500); /* 링크, 정보 */
+
+  /* ---------------------------------------------------------------
+   * 간격 — 4px 배수만 쓴다
+   * --------------------------------------------------------------- */
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* ---------------------------------------------------------------
+   * 타이포그래피
+   *
+   * 본문 서체는 주아체. **Regular 한 가지 굵기뿐이다.**
+   * font-weight: bold 를 쓰지 마라. 가짜 굵기(faux bold)가 적용되거나 렌더링이 깨진다.
+   * 위계는 크기와 색으로만 만든다.
+   *
+   * 쓰는 법: font: var(--font-title);
+   * font 단축 속성이라 font-weight가 normal로 초기화된다 — 이게 의도한 동작이다.
+   * 크기나 행간만 따로 필요하면 --font-*-size / --font-*-line 을 쓴다.
+   * --------------------------------------------------------------- */
+
+  --font-family-base: var(--font-jua), sans-serif;
+
+  --font-display-size: 28px;
+  --font-display-line: 36px;
+  --font-display: var(--font-display-size) / var(--font-display-line)
+    var(--font-family-base);
+
+  --font-title-size: 22px;
+  --font-title-line: 30px;
+  --font-title: var(--font-title-size) / var(--font-title-line)
+    var(--font-family-base);
+
+  --font-subtitle-size: 18px;
+  --font-subtitle-line: 26px;
+  --font-subtitle: var(--font-subtitle-size) / var(--font-subtitle-line)
+    var(--font-family-base);
+
+  --font-body-size: 16px;
+  --font-body-line: 24px;
+  --font-body: var(--font-body-size) / var(--font-body-line)
+    var(--font-family-base);
+
+  --font-caption-size: 14px;
+  --font-caption-line: 20px;
+  --font-caption: var(--font-caption-size) / var(--font-caption-line)
+    var(--font-family-base);
+
+  --font-label-size: 12px;
+  --font-label-line: 16px;
+  --font-label: var(--font-label-size) / var(--font-label-line)
+    var(--font-family-base);
+
+  /* ---------------------------------------------------------------
+   * 레이아웃
+   * 기준 폭 393px, 최소 지원 폭 360px. 360px에서 깨지지 않아야 한다.
+   * --------------------------------------------------------------- */
+
+  --layout-max-width: 480px;
+  --touch-target-min: 44px; /* 터치 영역 최소 44×44px */
+
+  /* 웹뷰 안전영역. env()를 각 컴포넌트에 흩뿌리지 말고 이 토큰을 쓴다 */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
