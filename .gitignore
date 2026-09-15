@@ -44,3 +44,8 @@ next-env.d.ts
 /.agents
 /hallmark-figma
 /skills-lock.json
+/docs/fable-review-prompt.md
+
+# IDE 개인 설정
+/.idea
+/.vscode
