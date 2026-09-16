@@ -1,0 +1,79 @@
+/*
+ * 고정 폭·고정 높이를 쓰지 않는다.
+ * 메뉴명이 길어지면(15자 이상) 가격을 밀어내지 않고 줄바꿈으로 늘어난다.
+ */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  padding: var(--space-4);
+
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--space-3);
+}
+
+.head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+
+  font: var(--font-subtitle);
+  color: var(--text-default);
+
+  /* 한글은 글자 단위로 끊기면 읽기 어렵다. 어절 단위로 줄바꿈하고,
+     띄어쓰기 없는 긴 단어만 넘칠 때 끊는다 */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.price {
+  flex-shrink: 0;
+
+  /* 메뉴명(subtitle) 첫 줄과 기준선을 맞춘다 */
+  font: var(--font-body);
+  line-height: var(--font-subtitle-line);
+  color: var(--text-secondary);
+}
+
+.action {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-default);
+}
+
+/* ---------------------------------------------------------------
+ * soldout
+ *
+ * 회색 처리는 opacity가 아니라 글자색으로 한다.
+ * opacity로 흐리게 하면 대비가 4.5:1 아래로 떨어진다(야외 햇빛에서 안 읽힌다).
+ * --text-muted(#666)는 흰 배경 대비 5.7:1이라 흐려 보이면서도 기준을 넘는다.
+ * --------------------------------------------------------------- */
+
+.soldout .name,
+.soldout .price {
+  color: var(--text-muted);
+}
+
+/* 품절 전용 색 토큰은 없다. 새 색을 만들지 않고 중립 회색 면으로 표현한다.
+   --text-secondary on --bg-page ≈ 6.9:1 */
+.badge {
+  flex-shrink: 0;
+
+  padding: 0 var(--space-2);
+
+  font: var(--font-label);
+  /* 메뉴명 첫 줄 높이 안에서 세로 가운데에 오도록 */
+  margin-top: var(--space-1);
+  line-height: var(--font-subtitle-size);
+  color: var(--text-secondary);
+
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
+  border-radius: var(--space-1);
+}

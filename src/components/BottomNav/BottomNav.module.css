@@ -1,0 +1,79 @@
+/*
+ * 화면 아래에 붙는 탭 바.
+ *
+ * position: fixed를 쓰지 않는다. fixed로 빼면 .app-shell의 최대 폭(480px)과
+ * 안전영역 처리를 벗어난다. 대신 flex 세로 배치의 맨 끝에 sticky로 붙인다.
+ * 화면 콘텐츠가 짧으면 margin-top: auto가 바닥으로 밀어준다.
+ */
+.nav {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-default);
+
+  /*
+   * 안전영역 예외 — 안전영역은 원래 .app-shell 한 곳에서만 처리한다.
+   * 그런데 탭 바는 배경이 홈 인디케이터 아래까지 깔려야 한다. 그렇지 않으면
+   * 바 아래로 페이지 배경이 띠처럼 드러난다.
+   * 그래서 바 안쪽에 안전영역만큼 여백을 넣고, 같은 값을 음수 마진으로 빼서
+   * .app-shell의 padding-bottom과 겹쳐 두 번 비지 않게 한다.
+   */
+  padding-bottom: var(--safe-bottom);
+  margin-bottom: calc(-1 * var(--safe-bottom));
+}
+
+.list {
+  display: flex;
+}
+
+.item {
+  flex: 1;
+  min-width: 0;
+}
+
+.tab {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-1);
+
+  font: var(--font-caption);
+  color: var(--text-muted);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.tab:active {
+  background: var(--bg-page);
+}
+
+/* ---------------------------------------------------------------
+ * 선택된 탭
+ * 주황 글자는 --brand-primary-text만 쓴다. --brand-primary(#ff6b35)를
+ * 글자색으로 쓰면 흰 배경 대비 2.8:1로 기준 미달이다.
+ * 색만으로 구분하지 않도록 위쪽에 막대를 함께 둔다.
+ * --------------------------------------------------------------- */
+
+.selected {
+  color: var(--brand-primary-text);
+}
+
+.selected::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: var(--space-4);
+  right: var(--space-4);
+
+  height: var(--space-1);
+
+  background: var(--brand-primary);
+  border-radius: 0 0 var(--space-1) var(--space-1);
+}

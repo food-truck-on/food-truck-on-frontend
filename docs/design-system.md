@@ -123,10 +123,20 @@
 | 컴포넌트 | variant | state |
 |---|---|---|
 | `Button` | `primary` `secondary` `kakao` `google` | `default` `pressed` `disabled` `loading` |
-| `BottomNav` | `owner` `customer` | 선택된 탭 |
+| `BottomNav` | — (사장님 전용) | 선택된 탭: `home` `location` `menu` |
 | `MenuCard` | — | `available` `soldout` |
 | `TextInput` | — | `default` `focus` `error` |
 | `Toggle` | — | `on` `off` `disabled` |
+
+**`BottomNav`는 사장님 화면에만 쓴다. (확정 — 2026-09-16)**
+원래 `owner` `customer` 두 variant였지만 손님 화면은 하단 탭 없이 지도 + 시트 구조로 가므로 `customer`를 없앴다.
+탭은 **사장님 홈 · 위치 정하기 · 메뉴 정하기** 3개다.
+
+- "손님 보기"는 탭이 아니다. 홈 화면의 **"내 가게 페이지 미리보기"** 버튼으로 바꾼다.
+  다른 트럭까지 보이는 주변 지도(`/nearby`)가 아니라 **내 트럭의 공유 링크 페이지(`/t/:slug`)만** 연다.
+  손님에게 링크를 보내기 전에 위치·메뉴가 제대로 보이는지 확인하는 용도다
+- 설정·로그아웃은 탭이 아니다. 자주 누르지 않으므로 홈 상단 아이콘으로 둔다
+- 피그마 프레임에는 아직 4탭(손님 보기 포함)으로 그려져 있다. 코드가 기준이고 피그마는 나중에 맞춘다
 
 ## 레이아웃
 

@@ -77,3 +77,18 @@
 .typeRow {
   color: var(--text-default);
 }
+
+/* 확인용 페이지에서는 탭 바를 바닥에 붙이지 않고 여러 개를 나란히 본다 */
+.navPreview {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: var(--space-3);
+}
+
+.navPreview > nav {
+  position: static;
+  margin: 0;
+  padding-bottom: 0;
+}

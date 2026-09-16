@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { BottomNav } from "@/components/BottomNav/BottomNav";
 import { Button } from "@/components/Button/Button";
+import { MenuCard } from "@/components/MenuCard/MenuCard";
 import { TextInput } from "@/components/TextInput/TextInput";
 import { Toggle } from "@/components/Toggle/Toggle";
 import styles from "./page.module.css";
@@ -44,6 +46,7 @@ const COLORS = [
 export default function ComponentsPreviewPage() {
   const [soldOut, setSoldOut] = useState(false);
   const [notify, setNotify] = useState(true);
+  const [menuSoldOut, setMenuSoldOut] = useState(false);
 
   return (
     <main className={styles.page}>
@@ -132,6 +135,48 @@ export default function ComponentsPreviewPage() {
             onChange={() => {}}
             disabled
           />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>MenuCard</h2>
+
+        <div className={styles.group}>
+          <p className={styles.groupTitle}>손님 — 읽기 전용 · available / soldout</p>
+          <MenuCard name="타코야끼 8알" price={5000} />
+          <MenuCard name={LONG_MENU} price={12000} soldOut />
+          <MenuCard
+            name="띄어쓰기없는아주긴메뉴이름이들어오면어떻게되는지확인"
+            price={9500}
+          />
+        </div>
+
+        <div className={styles.group}>
+          <p className={styles.groupTitle}>사장님 — 품절 토글</p>
+          <MenuCard
+            name={LONG_MENU}
+            price={12000}
+            soldOut={menuSoldOut}
+            onToggleSoldOut={setMenuSoldOut}
+          />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>BottomNav</h2>
+
+        <div className={styles.group}>
+          <p className={styles.groupTitle}>사장님 전용 · 선택된 탭 3종</p>
+          {/* 여기서는 sticky로 붙지 않게 감싸서 나란히 보여준다 */}
+          <div className={styles.navPreview}>
+            <BottomNav current="home" />
+          </div>
+          <div className={styles.navPreview}>
+            <BottomNav current="location" />
+          </div>
+          <div className={styles.navPreview}>
+            <BottomNav current="menu" />
+          </div>
         </div>
       </section>
 
