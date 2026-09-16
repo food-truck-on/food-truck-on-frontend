@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { BottomNav } from "@/components/BottomNav/BottomNav";
 import { Button } from "@/components/Button/Button";
+import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
+import { useToast } from "@/components/Toast/Toast";
 import { MenuCard } from "@/components/MenuCard/MenuCard";
 import { TextInput } from "@/components/TextInput/TextInput";
 import { Toggle } from "@/components/Toggle/Toggle";
@@ -47,6 +49,20 @@ export default function ComponentsPreviewPage() {
   const [soldOut, setSoldOut] = useState(false);
   const [notify, setNotify] = useState(true);
   const [menuSoldOut, setMenuSoldOut] = useState(false);
+  const toast = useToast();
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  // 실제 API가 없으니 처리 시간을 흉내만 낸다
+  const confirmClose = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      setCloseOpen(false);
+      toast("영업을 마감했어요");
+    }, 1200);
+  };
 
   return (
     <main className={styles.page}>
@@ -178,6 +194,66 @@ export default function ComponentsPreviewPage() {
             <BottomNav current="menu" />
           </div>
         </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Toast</h2>
+
+        <div className={styles.group}>
+          <p className={styles.groupTitle}>끝난 일을 과거형으로 · 연달아 누르면 교체</p>
+          <Button variant="secondary" onClick={() => toast("링크를 복사했어요")}>
+            링크 복사하기
+          </Button>
+          <Button variant="secondary" onClick={() => toast("저장했어요")}>
+            저장하기
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() =>
+              toast(`${LONG_MENU}를 품절로 바꿨어요. 내일은 다시 판매 중으로 보여요`)
+            }
+          >
+            긴 문구 토스트
+          </Button>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>ConfirmDialog</h2>
+
+        <div className={styles.group}>
+          <p className={styles.groupTitle}>피그마 17 · 처리 중에는 닫히지 않음</p>
+          <Button variant="primary" onClick={() => setCloseOpen(true)}>
+            오늘 영업 마감하기
+          </Button>
+          <Button variant="secondary" onClick={() => setDeleteOpen(true)}>
+            메뉴 삭제하기
+          </Button>
+        </div>
+
+        <ConfirmDialog
+          open={closeOpen}
+          icon="🌙"
+          title="오늘 영업을 마감할까요?"
+          description="손님 지도에서 '영업 종료'로 바뀌어요"
+          confirmLabel="마감하기"
+          cancelLabel="계속 영업할래요"
+          confirmLoading={closing}
+          onConfirm={confirmClose}
+          onCancel={() => setCloseOpen(false)}
+        />
+        <ConfirmDialog
+          open={deleteOpen}
+          title="메뉴를 삭제할까요?"
+          description={`${LONG_MENU}가 메뉴 목록에서 사라져요`}
+          confirmLabel="삭제하기"
+          cancelLabel="남겨둘게요"
+          onConfirm={() => {
+            setDeleteOpen(false);
+            toast("메뉴를 삭제했어요");
+          }}
+          onCancel={() => setDeleteOpen(false)}
+        />
       </section>
 
       <section className={styles.section}>

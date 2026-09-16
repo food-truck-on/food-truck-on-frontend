@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Jua } from "next/font/google";
+import { ToastProvider } from "@/components/Toast/Toast";
 import "./globals.css";
 
 /*
@@ -35,7 +36,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className={jua.variable}>
       <body>
-        <div className="app-shell">{children}</div>
+        <div className="app-shell">
+          {/* 어느 화면에서든 useToast()로 토스트를 띄울 수 있게 앱 전체를 감싼다 */}
+          <ToastProvider>{children}</ToastProvider>
+        </div>
       </body>
     </html>
   );
