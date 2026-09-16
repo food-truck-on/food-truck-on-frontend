@@ -49,3 +49,5 @@ next-env.d.ts
 # IDE 개인 설정
 /.idea
 /.vscode
+/status.md
+/docs/backend-message-*.md
