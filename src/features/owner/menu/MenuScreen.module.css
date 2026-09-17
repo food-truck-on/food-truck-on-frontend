@@ -1,0 +1,108 @@
+.screen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  padding: var(--space-5) var(--space-4);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  font: var(--font-title);
+  color: var(--text-default);
+}
+
+.desc {
+  font: var(--font-caption);
+  color: var(--text-secondary);
+  word-break: keep-all;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ---------------------------------------------------------------
+ * 에러 · 빈 상태
+ * --------------------------------------------------------------- */
+
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+
+  padding: var(--space-7) var(--space-4);
+
+  text-align: center;
+  word-break: keep-all;
+}
+
+.messageTitle {
+  font: var(--font-subtitle);
+  color: var(--text-default);
+}
+
+.messageDesc {
+  margin-bottom: var(--space-3);
+
+  font: var(--font-body);
+  color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------------
+ * 스켈레톤
+ * 새 색을 만들지 않고 기존 토큰(--border-default)으로 회색 막대를 그린다
+ * --------------------------------------------------------------- */
+
+.skeletonCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  padding: var(--space-4);
+
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--space-3);
+}
+
+.skeletonLine,
+.skeletonLineWide {
+  display: block;
+  height: var(--font-body-line);
+
+  background: var(--border-default);
+  border-radius: var(--space-1);
+
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.skeletonLineWide {
+  width: 70%;
+}
+
+.skeletonLine {
+  width: 30%;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonLine,
+  .skeletonLineWide {
+    animation: none;
+  }
+}
