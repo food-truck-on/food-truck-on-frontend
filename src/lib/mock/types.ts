@@ -26,6 +26,49 @@ export type MyFoodTruck = {
   };
 };
 
+/** 3-1. GET /api/v1/food-trucks/:foodTruckId/locations — 자주 가는 장소 (배열의 한 칸) */
+export type SavedLocation = {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  /**
+   * **명세에 없는 칸이다. 2026-09-21 백엔드에 추가를 요청했다(status.md).**
+   * 별을 켠 장소는 목록 맨 위에 고정된다. 이름이 다르게 정해지면 여기만 고친다.
+   */
+  is_favorite: boolean;
+};
+
+/** 별 켜기·끄기 응답. 엔드포인트가 아직 없어 요청해 둔 모양이다(status.md) */
+export type LocationFavoriteResult = {
+  id: number;
+  is_favorite: boolean;
+};
+
+/**
+ * 3-4. PATCH /api/v1/sessions/:sessionId/location — 요청 본문
+ *
+ * - location_id: 자주 가는 장소에서 골랐을 때만 그 id를 보낸다.
+ *   "현재 위치 불러오기"로 정하면 고른 장소가 없어서 **null로 보낸다.**
+ *   명세 예시에는 숫자만 있어 null을 받아 주는지 확인이 필요하다(status.md)
+ * - location_label: 손님 화면과 홈에 그대로 뜨는 문구. 자주 가는 장소면 address, 현재 위치면 주소 검색 결과
+ */
+export type SessionLocationRequest = {
+  location_id: number | null;
+  latitude: number;
+  longitude: number;
+  location_label: string;
+};
+
+/** 3-4. PATCH /api/v1/sessions/:sessionId/location — 응답 */
+export type SessionLocationResult = {
+  session_id: number;
+  location_label: string;
+  latitude: number;
+  longitude: number;
+};
+
 /**
  * 4-1. GET /api/v1/food-trucks/:foodTruckId/menus — 메뉴 목록 조회 (배열의 한 칸)
  *

@@ -1,5 +1,11 @@
 import { mockFetch } from "./mockFetch";
-import type { CloseResult, OpenResult, TodaySession } from "./types";
+import type {
+  CloseResult,
+  OpenResult,
+  SessionLocationRequest,
+  SessionLocationResult,
+  TodaySession,
+} from "./types";
 
 /** 오늘 날짜(KST)를 "2026-09-20" 모양으로. 서버가 date에 넣는 값과 같은 모양이다 */
 function todayKst(): string {
@@ -82,5 +88,26 @@ export async function closeSession(sessionId: number): Promise<CloseResult> {
   });
 
   if (todaySession) todaySession = { ...todaySession, status: result.status };
+  return result;
+}
+
+/**
+ * 3-4. PATCH /api/v1/sessions/:sessionId/location 자리.
+ * 오늘 영업할 위치를 정한다. 홈의 "위치" 줄이 이 값의 location_label로 바뀐다.
+ */
+export async function setSessionLocation(
+  sessionId: number,
+  body: SessionLocationRequest,
+): Promise<SessionLocationResult> {
+  const result = await mockFetch<SessionLocationResult>({
+    session_id: sessionId,
+    location_label: body.location_label,
+    latitude: body.latitude,
+    longitude: body.longitude,
+  });
+
+  if (todaySession) {
+    todaySession = { ...todaySession, location_label: result.location_label };
+  }
   return result;
 }

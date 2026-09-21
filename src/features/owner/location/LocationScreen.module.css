@@ -1,0 +1,349 @@
+.screen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  padding: var(--space-5) var(--space-4);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  font: var(--font-title);
+  color: var(--text-default);
+}
+
+.desc {
+  font: var(--font-caption);
+  color: var(--text-secondary);
+  word-break: keep-all;
+}
+
+/* ---------------------------------------------------------------
+ * 지도
+ * 고정 높이를 쓰지 않는다. 피그마 350×200 비율을 그대로 유지해 360px에서도 같은 모양이 된다
+ * --------------------------------------------------------------- */
+
+.map,
+.mapSkeleton,
+.mapFallback {
+  aspect-ratio: 7 / 4;
+  width: 100%;
+  overflow: hidden;
+
+  border-radius: var(--space-4);
+}
+
+.mapCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+.mapSkeleton {
+  background: var(--border-default);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.mapFallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+
+  padding: var(--space-4);
+
+  text-align: center;
+  word-break: keep-all;
+
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+
+.mapFallbackTitle {
+  font: var(--font-body);
+  color: var(--text-default);
+}
+
+.mapFallbackDesc {
+  font: var(--font-caption);
+  color: var(--text-secondary);
+}
+
+/* 커스텀 핀 — 이름표 · 주황 원 · 꼬리. 꼬리 끝이 좌표를 가리킨다(yAnchor=1) */
+.pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pinLabel {
+  margin-bottom: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+
+  font: var(--font-label);
+  color: var(--text-default);
+  white-space: nowrap;
+
+  background: var(--bg-surface);
+  border-radius: var(--space-2);
+  /* 그림자에 쓸 색 토큰이 없다. 새 색을 만들지 않고 글자색을 옅게 섞는다 */
+  box-shadow: 0 var(--space-1) var(--space-2)
+    color-mix(in srgb, var(--text-default) 15%, transparent);
+}
+
+.pinHead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: calc(var(--space-6) + var(--space-2));
+  height: calc(var(--space-6) + var(--space-2));
+
+  color: var(--text-on-brand);
+
+  background: var(--brand-primary);
+  border: 2px solid var(--bg-surface);
+  border-radius: 50%;
+  box-shadow: 0 var(--space-1) var(--space-2)
+    color-mix(in srgb, var(--text-default) 15%, transparent);
+}
+
+.pinTail {
+  width: 0;
+  height: 0;
+
+  border-inline: var(--space-1) solid transparent;
+  border-top: var(--space-2) solid var(--brand-primary);
+}
+
+/* ---------------------------------------------------------------
+ * 자주 가는 장소
+ * --------------------------------------------------------------- */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  font: var(--font-body);
+  color: var(--text-default);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/*
+ * 페이지 배경이 --bg-page라 카드는 --bg-surface로 띄운다(design-system.md 입력창 원칙과 같은 면 구분).
+ * 선택 전후로 크기가 흔들리지 않게 테두리 자리를 투명으로 미리 잡아 둔다.
+ */
+.place {
+  display: flex;
+  align-items: center;
+
+  padding-left: var(--space-1);
+
+  background: var(--bg-surface);
+  border: 2px solid transparent;
+  border-radius: var(--space-4);
+}
+
+.placeSelected {
+  background: var(--brand-primary-subtle);
+  border-color: var(--brand-primary);
+}
+
+.placeStar,
+.placePick {
+  border-radius: var(--space-3);
+}
+
+.placeStar:focus-visible,
+.placePick:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -2px;
+}
+
+/*
+ * 별 — 누르면 맨 위에 고정된다. 터치 영역 44×44를 지킨다.
+ * 꺼진 별은 피그마 #ccc와 같은 값인 --border-strong을 빌려 쓴다. 아이콘 전용 회색 토큰이 없어서다.
+ * 켜졌는지는 옆의 "고정" 글자로도 알 수 있어서 대비가 낮아도 상태를 놓치지 않는다
+ */
+.placeStar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+
+  color: var(--border-strong);
+}
+
+.placeStarOn {
+  color: var(--brand-primary);
+}
+
+.placeStar:disabled {
+  cursor: progress;
+}
+
+/* 고르기 — 카드의 나머지 전부 */
+.placePick {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+
+  min-width: 0;
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-2);
+
+  text-align: left;
+}
+
+.placeBadge {
+  flex-shrink: 0;
+
+  padding: 0 var(--space-2);
+
+  font: var(--font-label);
+  color: var(--brand-primary-text);
+
+  background: var(--brand-primary-subtle);
+  border-radius: var(--space-2);
+}
+
+/* 선택된 카드는 면이 이미 연한 주황이라 배지를 흰 면으로 띄운다 */
+.placeSelected .placeBadge {
+  background: var(--bg-surface);
+}
+
+.placeText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.placeName {
+  font: var(--font-body);
+  color: var(--text-default);
+  word-break: keep-all;
+}
+
+/* 주황 글자는 --brand-primary-text만 쓴다. --brand-primary는 흰 배경 대비 2.8:1이다 */
+.placeSelected .placeName {
+  color: var(--brand-primary-text);
+}
+
+.placeAddress {
+  font: var(--font-caption);
+  color: var(--text-muted);
+  word-break: keep-all;
+}
+
+.placeCheck {
+  display: flex;
+  color: var(--brand-primary-text);
+}
+
+/* ---------------------------------------------------------------
+ * 에러 · 빈 상태 · 안내
+ * --------------------------------------------------------------- */
+
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+
+  padding: var(--space-5) var(--space-4);
+
+  text-align: center;
+  word-break: keep-all;
+}
+
+.messageTitle {
+  font: var(--font-subtitle);
+  color: var(--text-default);
+}
+
+.messageDesc {
+  margin-bottom: var(--space-3);
+
+  font: var(--font-body);
+  color: var(--text-secondary);
+}
+
+.notice {
+  font: var(--font-caption);
+  color: var(--text-secondary);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+/* ---------------------------------------------------------------
+ * 스켈레톤
+ * 새 색을 만들지 않고 기존 토큰(--border-default)으로 회색 막대를 그린다
+ * --------------------------------------------------------------- */
+
+.skeletonCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  padding: var(--space-3) var(--space-4);
+
+  background: var(--bg-surface);
+  border-radius: var(--space-4);
+}
+
+.skeletonLine,
+.skeletonLineWide {
+  display: block;
+  height: var(--font-caption-line);
+
+  background: var(--border-default);
+  border-radius: var(--space-1);
+
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.skeletonLineWide {
+  width: 50%;
+}
+
+.skeletonLine {
+  width: 70%;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapSkeleton,
+  .skeletonLine,
+  .skeletonLineWide {
+    animation: none;
+  }
+}

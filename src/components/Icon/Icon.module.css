@@ -1,0 +1,19 @@
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+
+  background: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.sm {
+  width: var(--font-caption-line);
+  height: var(--font-caption-line);
+}
+
+.md {
+  width: var(--font-body-line);
+  height: var(--font-body-line);
+}
