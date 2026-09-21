@@ -1,0 +1,352 @@
+.screen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  padding: var(--space-5) var(--space-4);
+}
+
+/* ---------------------------------------------------------------
+ * 머리말
+ * --------------------------------------------------------------- */
+
+.header,
+.headerOpen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  margin: calc(var(--space-5) * -1) calc(var(--space-4) * -1) 0;
+  padding: var(--space-5) var(--space-4);
+}
+
+/* 준비 중에는 연한 주황 면으로 "아직 안 열었다"를 알린다 */
+.header {
+  background: var(--brand-primary-subtle);
+}
+
+.date {
+  font: var(--font-caption);
+  color: var(--brand-primary-text);
+}
+
+.title {
+  font: var(--font-display);
+  color: var(--text-default);
+  word-break: keep-all;
+}
+
+/* 영업 중 배지 — 색만으로 상태를 말하지 않는다. 글자를 함께 쓴다 */
+.openBadge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-2);
+
+  padding: var(--space-1) var(--space-3);
+
+  font: var(--font-label);
+  color: var(--status-open);
+
+  background: var(--status-open-bg);
+  border-radius: var(--space-4);
+}
+
+.openDot {
+  width: var(--space-2);
+  height: var(--space-2);
+
+  background: var(--status-open);
+  border-radius: 50%;
+}
+
+/* ---------------------------------------------------------------
+ * 위치 · 영업시간 · 메뉴 세 줄
+ * --------------------------------------------------------------- */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.row,
+.rowFilled {
+  border: 1px solid var(--border-default);
+  border-radius: var(--space-3);
+}
+
+/* 채워진 줄은 주황 면으로 "됐다"를 보여준다 */
+.rowFilled {
+  background: var(--brand-primary-subtle);
+  border-color: var(--brand-primary);
+}
+
+.row {
+  background: var(--bg-page);
+}
+
+.rowLink,
+.rowStatic {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  /* 터치 영역 최소값을 지키고, 두 줄이 되면 padding만큼 자연히 늘어난다 */
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4);
+}
+
+.rowLink {
+  text-decoration: none;
+}
+
+/* 세 줄의 라벨 폭을 맞춰 값이 같은 자리에서 시작하게 한다.
+   "영업시간"(4자)이 가장 길어 그 글자 수를 기준으로 잡는다 */
+.rowLabel {
+  flex-shrink: 0;
+  width: 4em;
+
+  font: var(--font-body);
+  color: var(--text-default);
+}
+
+/* 글자가 길어져도 밀리지 않게 남은 폭을 전부 가져간다 */
+.rowValue,
+.rowEmpty {
+  flex: 1;
+  min-width: 0;
+
+  font: var(--font-body);
+  word-break: keep-all;
+}
+
+.rowValue {
+  color: var(--brand-primary-text);
+}
+
+.rowEmpty {
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+
+.rowChevron {
+  flex-shrink: 0;
+
+  font: var(--font-subtitle);
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------
+ * 손님 초대 링크 (영업 중)
+ * --------------------------------------------------------------- */
+
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  padding: var(--space-4);
+
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--space-3);
+}
+
+.shareTitle {
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+
+.shareUrl {
+  font: var(--font-body);
+  color: var(--text-default);
+  word-break: break-all;
+}
+
+.shareActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+
+  margin-top: var(--space-2);
+}
+
+.previewLink {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: var(--touch-target-min);
+
+  font: var(--font-caption);
+  color: var(--info);
+}
+
+/* ---------------------------------------------------------------
+ * 하단 버튼
+ * 키보드가 올라와도 가려지지 않게 고정하지 않고 흐름 안에 둔다
+ * --------------------------------------------------------------- */
+
+.footer {
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+/* ---------------------------------------------------------------
+ * 영업 종료 (피그마 18)
+ * 하루를 마무리하는 화면이라 이 한 장만 어둡게 그린다. 다크 모드가 아니다.
+ * --------------------------------------------------------------- */
+
+.closed {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+
+  /* 화면 전체를 덮는다. .screen의 좌우 여백을 되돌려 가장자리까지 어둡게 칠한다 */
+  margin: calc(var(--space-5) * -1) calc(var(--space-4) * -1);
+  padding: var(--space-7) var(--space-4);
+
+  text-align: center;
+  word-break: keep-all;
+
+  background: var(--bg-inverse);
+}
+
+.closedIcon {
+  font: var(--font-display);
+}
+
+.closedTitle {
+  font: var(--font-title);
+  color: var(--text-on-inverse);
+}
+
+.closedDesc {
+  font: var(--font-body);
+  color: var(--text-on-inverse-muted);
+}
+
+.closedSummary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-self: stretch;
+
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+
+  text-align: left;
+
+  /* 어두운 배경 위에 얹는 카드. 새 색을 만들지 않고 흰색을 옅게 섞어 한 겹 띄운다 */
+  background: color-mix(in srgb, var(--text-on-inverse) 8%, transparent);
+  border-radius: var(--space-3);
+}
+
+.closedItem {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* 어두운 면 위에서는 라벨·값 색을 뒤집는다 */
+.closedItem .rowLabel {
+  width: auto;
+
+  font: var(--font-caption);
+  color: var(--text-on-inverse-muted);
+}
+
+.closedItem .rowValue {
+  flex: none;
+
+  color: var(--text-on-inverse);
+}
+
+.closedOutro {
+  margin-top: auto;
+  padding-top: var(--space-6);
+
+  font: var(--font-subtitle);
+  color: var(--text-on-inverse);
+}
+
+/* ---------------------------------------------------------------
+ * 에러
+ * --------------------------------------------------------------- */
+
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+
+  padding: var(--space-7) var(--space-4);
+
+  text-align: center;
+  word-break: keep-all;
+}
+
+.messageTitle {
+  font: var(--font-subtitle);
+  color: var(--text-default);
+}
+
+.messageDesc {
+  margin-bottom: var(--space-3);
+
+  font: var(--font-body);
+  color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------------
+ * 스켈레톤 — 새 색을 만들지 않고 --border-default로 회색 막대를 그린다
+ * --------------------------------------------------------------- */
+
+.skeletonRow {
+  /* 불러온 뒤 .rowLink와 같은 높이여서 화면이 튀지 않는다 */
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4);
+
+  background: var(--border-default);
+  border-radius: var(--space-3);
+
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.skeletonLine,
+.skeletonLineWide {
+  display: block;
+  height: var(--font-body-line);
+
+  background: var(--border-default);
+  border-radius: var(--space-1);
+
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.skeletonLine {
+  width: 40%;
+}
+
+.skeletonLineWide {
+  width: 80%;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonRow,
+  .skeletonLine,
+  .skeletonLineWide {
+    animation: none;
+  }
+}
