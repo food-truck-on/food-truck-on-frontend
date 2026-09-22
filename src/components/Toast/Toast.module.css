@@ -1,6 +1,7 @@
 /*
- * 화면 아래, 사장님 하단 탭 바로 위에 띄운다.
- * 탭 높이는 터치 영역 최소값(44px)이라 같은 토큰으로 간격을 계산한다.
+ * 하단 탭 바로 위에 띄운다. 하단 버튼이 있는 화면에서는 **그 버튼 위에 같은 크기로 겹친다.**
+ * 반쯤 걸쳐 덮으면 버튼인지 알림인지 애매해 보인다. 딱 겹쳐 잠깐 버튼 자리를 알림이 쓰는 모양이다.
+ * 자리(--toast-clear-*)는 globals.css에서 화면에 무엇이 있는지 보고 정한다.
  *
  * 누를 수 없는 알림이라 영역 전체의 포인터 이벤트를 끈다.
  * 토스트가 떠 있는 동안에도 뒤의 버튼을 그대로 누를 수 있어야 한다.
@@ -9,7 +10,10 @@
   position: fixed;
   left: 0;
   right: 0;
-  bottom: calc(var(--safe-bottom) + var(--touch-target-min) + var(--space-4));
+  bottom: calc(
+    var(--safe-bottom) + var(--toast-clear-nav, 0px) +
+      var(--toast-clear-cta, var(--space-3))
+  );
   z-index: 10;
 
   display: flex;
@@ -21,12 +25,16 @@
 }
 
 /*
+ * 여백·줄 높이·테두리·모서리를 Button과 같게 둔다. 그래야 하단 버튼 위에 딱 겹친다.
+ * Button: 여백 --space-3 --space-4 · --font-body · 테두리 1px · 모서리 --space-3
+ *
  * 토스트 전용 색 토큰이 없다. 새 색을 만들지 않고 카드와 같은 면 + 테두리로 띄운다.
  * 페이지 배경(--bg-page) 위에서 흰 면과 테두리로 구분된다.
  */
 .toast {
   width: 100%;
-  max-width: var(--layout-max-width);
+  /* 버튼은 앱 폭(최대 480px)에서 좌우 여백을 뺀 폭이다. 넓은 화면에서도 같은 폭이 되게 */
+  max-width: calc(var(--layout-max-width) - var(--space-4) * 2);
 
   padding: var(--space-3) var(--space-4);
 

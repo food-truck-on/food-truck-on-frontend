@@ -29,7 +29,7 @@ type Props = {
  */
 export function BottomNav({ current }: Props) {
   return (
-    <nav aria-label="사장님 메뉴" className={styles.nav}>
+    <nav aria-label="사장님 메뉴" className={styles.nav} data-bottom-nav>
       <ul className={styles.list}>
         {TABS.map((tab) => {
           const selected = tab.id === current;

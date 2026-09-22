@@ -284,7 +284,7 @@ export function LocationScreen() {
         </p>
       ) : null}
 
-      <div className={styles.footer}>
+      <div className={styles.footer} data-bottom-cta>
         <Button
           block
           loading={saving}
