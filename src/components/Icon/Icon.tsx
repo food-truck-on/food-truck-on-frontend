@@ -1,7 +1,7 @@
 import styles from "./Icon.module.css";
 
 /** `public/icons/`에 있는 파일 이름. 피그마에서 내보낸 SVG를 그대로 넣어 둔 것이다 */
-export type IconName = "pin" | "target" | "star" | "check";
+export type IconName = "pin" | "target" | "star" | "check" | "plus" | "history";
 
 type Props = {
   name: IconName;

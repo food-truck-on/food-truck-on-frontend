@@ -11,7 +11,7 @@ function todayKst(): string {
  * - 15자 넘는 메뉴명 — "매콤 크림치즈 타코야끼 세트"
  * - 품절 메뉴 하나
  */
-const menus: Menu[] = [
+let menus: Menu[] = [
   {
     id: 1,
     name: "타코야끼 8알",
@@ -52,6 +52,28 @@ const menus: Menu[] = [
  */
 export function getMenus(): Promise<Menu[]> {
   return mockFetch(menus, []);
+}
+
+/** 4-2 요청 본문 */
+export type NewMenu = Pick<Menu, "name" | "price">;
+
+/**
+ * 4-2. POST /api/v1/food-trucks/:foodTruckId/menus 자리.
+ * 새 메뉴는 품절 아님 · 사용 중으로 만들어진다. 목록 맨 끝에 붙는다.
+ */
+export async function addMenu(body: NewMenu): Promise<Menu> {
+  const created = await mockFetch<Menu>({
+    id: Math.max(0, ...menus.map((m) => m.id)) + 1,
+    name: body.name,
+    price: body.price,
+    is_sold_out: false,
+    sold_out_date: null,
+    is_active: true,
+  });
+
+  // 실패하지 않았을 때만 원본에 넣는다. 다른 화면을 다녀와도 목록에 남는다
+  menus = [...menus, created];
+  return created;
 }
 
 /** 4-6 응답. 명세상 메뉴 전체가 아니라 네 칸만 온다 */
