@@ -5,9 +5,15 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { useToast } from "@/components/Toast/Toast";
-import { closeSession, getTodaySession, openSession } from "@/lib/mock/sessions";
+import {
+  closeSession,
+  getTodaySession,
+  openSession,
+  setSessionHours,
+} from "@/lib/mock/sessions";
 import { getMyFoodTruck } from "@/lib/mock/trucks";
 import type { MyFoodTruck, TodaySession } from "@/lib/mock/types";
+import { HoursSheet } from "./HoursSheet";
 import styles from "./HomeScreen.module.css";
 
 type State =
@@ -22,7 +28,7 @@ type State =
  *   null       → 01. 아직 아무것도 안 정함
  *   preparing  → 12. 정하는 중. 다 채우면 "지금 오픈하기"가 눌린다
  *   open       → 15. 영업 중. 공유 링크와 마감 버튼이 보인다
- *   closed     → 18. 오늘 영업 끝 **(미구현 — 아래 ClosedNotice 주석)**
+ *   closed     → 18. 오늘 영업 끝 (ClosedNotice)
  *
  * 주소 끝에 ?session=none|preparing|open|closed 로 각 상태를,
  * ?mock=slow|error 로 로딩·에러를 볼 수 있다.
@@ -33,6 +39,11 @@ export function HomeScreen() {
   /** 오픈·마감 요청이 진행 중. 연타로 두 번 보내지 않게 막는다 */
   const [pending, setPending] = useState(false);
   const [closeAsking, setCloseAsking] = useState(false);
+  const [hoursOpen, setHoursOpen] = useState(false);
+  const [hoursSaving, setHoursSaving] = useState(false);
+  /** 시트 안에 보여줄 실패 문구. 시트가 떠 있는 동안 토스트는 창 뒤에 깔려 보이지 않는다 */
+  const [hoursError, setHoursError] = useState<string>();
+  const [closeError, setCloseError] = useState<string>();
 
   const load = useCallback(async () => {
     setState({ kind: "loading" });
@@ -61,6 +72,31 @@ export function HomeScreen() {
     );
   }
 
+  async function handleSaveHours(
+    session: TodaySession,
+    openTime: string,
+    closeTime: string,
+  ) {
+    if (hoursSaving) return;
+    setHoursSaving(true);
+    setHoursError(undefined);
+    try {
+      const result = await setSessionHours(session.id, {
+        open_time: openTime,
+        close_time: closeTime,
+      });
+      patchSession({ open_time: result.open_time, close_time: result.close_time });
+      setHoursOpen(false);
+      // "영업시간 저장하기"를 눌렀으니 토스트도 같은 말을 쓴다
+      toast("영업시간을 저장했어요");
+    } catch {
+      // 창을 닫지 않는다. 굴려 놓은 값을 그대로 두고 다시 누르게 한다
+      setHoursError("영업시간을 저장하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
+    } finally {
+      setHoursSaving(false);
+    }
+  }
+
   async function handleOpen(session: TodaySession) {
     if (pending) return;
     setPending(true);
@@ -79,13 +115,15 @@ export function HomeScreen() {
   async function handleClose(session: TodaySession) {
     if (pending) return;
     setPending(true);
+    setCloseError(undefined);
     try {
       const result = await closeSession(session.id);
       patchSession({ status: result.status });
       setCloseAsking(false);
       toast("오늘 영업을 마감했어요");
     } catch {
-      toast("마감하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
+      // 확인창이 열려 있어 토스트는 창 뒤에 깔린다. 창 안에 보여준다
+      setCloseError("마감하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
     } finally {
       setPending(false);
     }
@@ -154,7 +192,12 @@ export function HomeScreen() {
           value={session?.location_label}
           href="/owner/location"
         />
-        <SettingRow label="영업시간" value={formatHours(session)} />
+        <SettingRow
+          label="영업시간"
+          value={formatHours(session)}
+          // 오늘 세션이 없으면 저장할 곳이 없다. 누를 수 없는 줄로 둔다
+          onClick={session ? () => setHoursOpen(true) : undefined}
+        />
         <SettingRow
           label="메뉴"
           value={session?.menus[0]?.name}
@@ -184,7 +227,7 @@ export function HomeScreen() {
         </section>
       ) : null}
 
-      <footer className={styles.footer}>
+      <footer className={styles.footer} data-bottom-cta>
         {session === null ? (
           <Button block disabled>
             위치와 메뉴를 먼저 설정해 주세요
@@ -213,8 +256,27 @@ export function HomeScreen() {
         confirmLabel="마감하기"
         cancelLabel="계속 영업할래요"
         confirmLoading={pending}
+        error={closeError}
         onConfirm={() => session && void handleClose(session)}
-        onCancel={() => setCloseAsking(false)}
+        onCancel={() => {
+          setCloseAsking(false);
+          setCloseError(undefined);
+        }}
+      />
+
+      <HoursSheet
+        open={hoursOpen}
+        openTime={session?.open_time ?? null}
+        closeTime={session?.close_time ?? null}
+        saving={hoursSaving}
+        error={hoursError}
+        onSave={(openTime, closeTime) =>
+          session && void handleSaveHours(session, openTime, closeTime)
+        }
+        onClose={() => {
+          setHoursOpen(false);
+          setHoursError(undefined);
+        }}
       />
     </main>
   );
@@ -225,10 +287,14 @@ function SettingRow({
   label,
   value,
   href,
+  onClick,
 }: {
   label: string;
   value?: string | null;
+  /** 다른 화면으로 가는 줄 */
   href?: string;
+  /** 이 화면에서 창을 여는 줄. href와 같이 쓰지 않는다 */
+  onClick?: () => void;
 }) {
   const filled = Boolean(value);
   const body = (
@@ -243,9 +309,8 @@ function SettingRow({
   return (
     <li className={filled ? styles.rowFilled : styles.row}>
       {/*
-       * 화면이 없는 항목은 링크로 만들지 않는다.
+       * 갈 곳도 열 창도 없는 항목은 누를 수 있게 만들지 않는다.
        * 눌러도 아무 일이 없는 버튼을 두면 데모에서 반드시 눌린다.
-       * 영업시간 모달(피그마 05)은 저장할 API가 없어 아직 못 만든다(status.md Delegate).
        */}
       {href ? (
         <Link className={styles.rowLink} href={href}>
@@ -254,6 +319,13 @@ function SettingRow({
             ›
           </span>
         </Link>
+      ) : onClick ? (
+        <button type="button" className={styles.rowLink} onClick={onClick}>
+          {body}
+          <span className={styles.rowChevron} aria-hidden="true">
+            ›
+          </span>
+        </button>
       ) : (
         <div className={styles.rowStatic}>{body}</div>
       )}

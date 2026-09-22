@@ -111,6 +111,32 @@ export type TodaySession = {
   close_time: string | null;
 };
 
+/**
+ * 영업시간 저장 — **명세에 없는 엔드포인트다. 2026-09-20 백엔드에 신설을 요청했다(status.md).**
+ * 요청해 둔 모양은 `PATCH /api/v1/sessions/:sessionId/hours`. 칸 이름은 6-1·6-2에 이미 있는 것을 따랐다.
+ */
+export type SessionHoursRequest = {
+  open_time: string;
+  close_time: string;
+};
+
+export type SessionHoursResult = {
+  session_id: number;
+  open_time: string;
+  close_time: string;
+};
+
+/**
+ * 4-5. POST /api/v1/sessions/:sessionId/menus/import-yesterday — 어제 메뉴 불러오기
+ * 어제 세션의 메뉴 스냅샷(SessionMenu)을 오늘 세션으로 복사한다(product-rules.md "영업").
+ *
+ * - 어제 영업을 안 했을 때 무엇이 오는지 명세에 없다. imported_count가 0으로 온다고 가정한다(status.md)
+ */
+export type ImportYesterdayResult = {
+  imported_count: number;
+  menus: { id: number; name: string; price: number; is_sold_out: boolean }[];
+};
+
 /** 5-2. POST /api/v1/sessions/:sessionId/open — 오픈하기 */
 export type OpenResult = {
   id: number;

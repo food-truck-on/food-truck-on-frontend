@@ -1,0 +1,132 @@
+.title {
+  font: var(--font-title);
+  color: var(--text-default);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fieldLabel {
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+
+.divider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--border-default);
+}
+
+.hint {
+  font: var(--font-caption);
+  color: var(--brand-primary-text);
+  text-align: center;
+  word-break: keep-all;
+}
+
+/* ---------------------------------------------------------------
+ * 휠 (TimeWheel)
+ * 한 칸 높이는 --space-7(48px)로 고정한다. 휠은 칸 단위로 멈춰야 해서 높이가 흔들리면 안 된다.
+ * 보이는 칸은 세 개 — 위 · 선택 · 아래
+ * --------------------------------------------------------------- */
+
+.wheel {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.column {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.scroller {
+  /* 띠(.band) 위, 흐림(.fade*) 아래에 놓여야 글자가 보이면서 위아래가 흐려진다 */
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  height: calc(var(--space-7) * 3);
+  padding-block: var(--space-7);
+  overflow-y: auto;
+
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.option,
+.optionSelected {
+  flex-shrink: 0;
+
+  height: var(--space-7);
+
+  scroll-snap-align: center;
+}
+
+.option {
+  font: var(--font-body);
+  color: var(--text-muted);
+}
+
+/* 주황 글자는 --brand-primary-text만 쓴다. 선택은 띠 · 크기 · 색 세 가지로 알린다 */
+.optionSelected {
+  font: var(--font-subtitle);
+  color: var(--brand-primary-text);
+}
+
+.option:focus-visible,
+.optionSelected:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -2px;
+}
+
+.band,
+.fadeTop,
+.fadeBottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  height: var(--space-7);
+
+  pointer-events: none;
+}
+
+.band {
+  top: var(--space-7);
+
+  background: var(--brand-primary-subtle);
+  border-block: 1px solid var(--brand-primary);
+}
+
+.fadeTop,
+.fadeBottom {
+  z-index: 2;
+}
+
+.fadeTop {
+  top: 0;
+  background: linear-gradient(var(--bg-surface), transparent);
+}
+
+.fadeBottom {
+  bottom: 0;
+  background: linear-gradient(transparent, var(--bg-surface));
+}

@@ -98,7 +98,11 @@
   padding: var(--space-3) var(--space-4);
 }
 
+/* 링크(위치·메뉴)와 버튼(영업시간)이 같은 모양이 되게 버튼 기본값을 맞춘다 */
 .rowLink {
+  width: 100%;
+
+  text-align: left;
   text-decoration: none;
 }
 
