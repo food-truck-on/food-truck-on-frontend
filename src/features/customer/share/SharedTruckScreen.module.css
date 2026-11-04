@@ -1,0 +1,326 @@
+/*
+ * 공유 링크 페이지 (/t/:slug)
+ * 피그마 손님 `02 트럭 상세 시트`를 한 장으로 펼친 모양. 시트처럼 흰 면 위에 올린다.
+ * 고정 폭·고정 높이를 쓰지 않는다. 360px에서 트럭 이름·메뉴명이 길어지면 줄바꿈으로 늘어난다.
+ */
+.screen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  padding: var(--space-5) var(--space-4);
+
+  background: var(--bg-surface);
+}
+
+/* ---------------------------------------------------------------
+ * 머리말 — 영업 상태 · 트럭 이름 · 영업시간
+ * --------------------------------------------------------------- */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* 상태를 색으로만 표현하지 않는다. 점 + 글자를 함께 쓴다 */
+.badgeOpen,
+.badgePreparing {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-2);
+
+  padding: var(--space-1) var(--space-3);
+
+  font: var(--font-label);
+  border-radius: var(--space-4);
+}
+
+.badgeOpen {
+  color: var(--status-open);
+  background: var(--status-open-bg);
+}
+
+.badgePreparing {
+  color: var(--text-muted);
+  background: var(--bg-page);
+}
+
+.dotOpen,
+.dotPreparing {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: 50%;
+}
+
+.dotOpen {
+  background: var(--status-open);
+}
+
+.dotPreparing {
+  background: var(--text-muted);
+}
+
+.name {
+  font: var(--font-display);
+  color: var(--text-default);
+
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.hours {
+  font: var(--font-body);
+  color: var(--text-secondary);
+}
+
+.remaining {
+  font: var(--font-caption);
+  color: var(--brand-primary-text);
+}
+
+.notice {
+  font: var(--font-caption);
+  color: var(--text-secondary);
+  word-break: keep-all;
+}
+
+/* ---------------------------------------------------------------
+ * 오늘 위치
+ * 흰 면 위라 카드는 --bg-page로 한 겹 구분한다
+ * --------------------------------------------------------------- */
+
+.location {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  padding: var(--space-4);
+
+  background: var(--bg-page);
+  border-radius: var(--space-3);
+}
+
+.locationTitle {
+  font: var(--font-caption);
+  color: var(--text-muted);
+}
+
+.locationLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+
+  font: var(--font-subtitle);
+  color: var(--text-default);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 핀 아이콘 높이(본문 한 줄)를 부제목 첫 줄 가운데에 맞춘다 */
+.locationIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding-top: var(--space-1);
+  color: var(--brand-primary-text);
+}
+
+/*
+ * 바깥 링크라 <a>다. Button 컴포넌트는 <button>이라 쓸 수 없어서 primary 모양만 맞췄다.
+ * 사장님 홈의 "내 가게 페이지 미리보기"도 같은 이유로 링크를 따로 칠했다.
+ */
+.directions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4);
+
+  font: var(--font-body);
+  color: var(--text-on-brand);
+  text-align: center;
+
+  background: var(--brand-primary);
+  border-radius: var(--space-3);
+}
+
+.directions:active {
+  /* Button primary와 같은 눌림. 주황을 어둡게 만들 토큰이 없어 밝기로 누른다 */
+  filter: brightness(0.92);
+}
+
+/* ---------------------------------------------------------------
+ * 오늘의 메뉴
+ * --------------------------------------------------------------- */
+
+.menus {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  font: var(--font-subtitle);
+  color: var(--text-default);
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.menusEmpty {
+  padding: var(--space-5) var(--space-4);
+
+  font: var(--font-body);
+  color: var(--text-secondary);
+  text-align: center;
+  word-break: keep-all;
+
+  background: var(--bg-page);
+  border-radius: var(--space-3);
+}
+
+/* ---------------------------------------------------------------
+ * 하단 — 오픈 알림 (1차 범위 아님. 비활성 + "준비 중")
+ * --------------------------------------------------------------- */
+
+.footer {
+  margin-top: auto;
+}
+
+.soon {
+  padding: 0 var(--space-2);
+
+  font: var(--font-label);
+  color: var(--text-muted);
+
+  background: var(--bg-page);
+  border-radius: var(--space-2);
+}
+
+/* ---------------------------------------------------------------
+ * 오늘은 쉬어요 / 오늘 영업을 마쳤어요
+ * --------------------------------------------------------------- */
+
+.rest {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  padding: var(--space-7) var(--space-4);
+
+  text-align: center;
+  word-break: keep-all;
+}
+
+.restIcon {
+  font: var(--font-display);
+}
+
+.restTruck {
+  font: var(--font-body);
+  color: var(--brand-primary-text);
+  overflow-wrap: anywhere;
+}
+
+.restTitle {
+  font: var(--font-display);
+  color: var(--text-default);
+}
+
+.restDesc {
+  font: var(--font-body);
+  color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------------
+ * 링크가 잘못됐을 때 · 불러오지 못했을 때
+ * --------------------------------------------------------------- */
+
+.message {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  padding: var(--space-7) var(--space-4);
+
+  text-align: center;
+  word-break: keep-all;
+}
+
+.messageTitle {
+  font: var(--font-subtitle);
+  color: var(--text-default);
+}
+
+.messageDesc {
+  margin-bottom: var(--space-3);
+
+  font: var(--font-body);
+  color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------------
+ * 스켈레톤 — 새 색을 만들지 않고 --border-default로 회색 막대를 그린다
+ * --------------------------------------------------------------- */
+
+.skeletonBadge,
+.skeletonTitle,
+.skeletonLine,
+.skeletonBlock {
+  display: block;
+
+  background: var(--border-default);
+
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.skeletonBadge {
+  width: 20%;
+  height: var(--font-label-line);
+  border-radius: var(--space-4);
+}
+
+.skeletonTitle {
+  width: 60%;
+  height: var(--font-display-line);
+  border-radius: var(--space-1);
+}
+
+.skeletonLine {
+  width: 50%;
+  height: var(--font-body-line);
+  border-radius: var(--space-1);
+}
+
+/* 메뉴 카드 한 장 높이: 위아래 여백 + 메뉴명 한 줄 */
+.skeletonBlock {
+  min-height: calc(var(--space-4) * 2 + var(--font-subtitle-line));
+  border-radius: var(--space-3);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonBadge,
+  .skeletonTitle,
+  .skeletonLine,
+  .skeletonBlock {
+    animation: none;
+  }
+}

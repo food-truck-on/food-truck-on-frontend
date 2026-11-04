@@ -26,13 +26,20 @@ export class ApiError extends Error {
   }
 }
 
-function currentScenario(): MockScenario {
-  // 서버에서 실행될 때는 주소창이 없다
-  if (typeof window === "undefined") return "normal";
-
-  const value = new URLSearchParams(window.location.search).get("mock");
+/**
+ * ?mock= 값을 시나리오로 바꾼다. 모르는 값이면 normal.
+ * 서버 컴포넌트(`/t/:slug`)는 주소창이 없어서 searchParams를 받아 이 함수로 넘긴다.
+ */
+export function parseScenario(value: unknown): MockScenario {
   if (value === "slow" || value === "error" || value === "empty") return value;
   return "normal";
+}
+
+function currentScenario(): MockScenario {
+  // 서버에서 실행될 때는 주소창이 없다. 서버 화면은 scenario를 직접 넘긴다
+  if (typeof window === "undefined") return "normal";
+
+  return parseScenario(new URLSearchParams(window.location.search).get("mock"));
 }
 
 const sleep = (ms: number) =>
@@ -41,9 +48,13 @@ const sleep = (ms: number) =>
 /**
  * @param data      평소에 돌려줄 목데이터
  * @param emptyData ?mock=empty 일 때 돌려줄 값. 생략하면 data를 그대로 준다
+ * @param scenario  서버 컴포넌트에서 부를 때만 넘긴다. 생략하면 주소창의 ?mock=을 읽는다
  */
-export async function mockFetch<T>(data: T, emptyData: T = data): Promise<T> {
-  const scenario = currentScenario();
+export async function mockFetch<T>(
+  data: T,
+  emptyData: T = data,
+  scenario: MockScenario = currentScenario(),
+): Promise<T> {
 
   // 진짜 네트워크도 0초가 아니다. 짧게라도 기다려야 로딩 처리를 빼먹은 게 드러난다
   await sleep(scenario === "slow" ? 3000 : 400);

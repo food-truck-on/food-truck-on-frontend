@@ -1,26 +1,31 @@
-import { RoutePlaceholder } from "@/components/RoutePlaceholder/RoutePlaceholder";
+import { notFound } from "next/navigation";
+import { SharedTruckScreen } from "@/features/customer/share/SharedTruckScreen";
+import { parseScenario } from "@/lib/mock/mockFetch";
+import { getSharedTruck } from "@/lib/mock/sharedTrucks";
 
 /*
  * 공유 링크로 들어오는 단일 트럭 페이지. 로그인 불필요.
  * 이 서비스의 핵심 진입점이라 다른 화면에 의존하지 않고 단독으로 완결돼야 한다.
  *
- * 이 페이지만 서버 렌더링이 반드시 필요하다 — 카카오톡 크롤러가 OG 태그를 읽어가야 하기 때문.
- * OG 태그는 여기에 generateMetadata()를 붙여서 만든다. 아직 안 붙인 이유:
- * 트럭 이름·오늘 위치·영업 상태를 API에서 받아와야 하는데 명세가 확정 전이고,
- * share_url을 슬러그로 줄지 전체 URL로 줄지도 백엔드와 정리가 안 끝났다(status.md Delegate).
+ * 서버에서 그린다 — 카카오톡 크롤러가 서버가 만든 HTML에서 OG 태그를 읽어 가기 때문이다.
  *
- * 필요한 화면 두 가지: 영업 중(위치·영업시간·메뉴) / 오늘은 쉬어요.
+ * 네 상태
+ *   로딩  loading.tsx    스켈레톤
+ *   에러  error.tsx      다시 불러오기
+ *   없음  not-found.tsx  잘못된 링크
+ *   성공  이 파일         영업 중 · 준비 중 · 영업 종료 · 오늘은 쉬어요
+ *
+ * 목데이터 확인: 주소 끝에 ?mock=slow | error | empty (lib/mock/mockFetch.ts)
  */
 export default async function SharedTruckPage({
   params,
+  searchParams,
 }: PageProps<"/t/[slug]">) {
   const { slug } = await params;
+  const { mock } = await searchParams;
 
-  return (
-    <RoutePlaceholder
-      path={`/t/${slug}`}
-      title="공유 링크 — 단일 트럭"
-      note="OG 태그(카카오톡 미리보기)는 generateMetadata로. API 명세 확정 후 붙인다"
-    />
-  );
+  const truck = await getSharedTruck(slug, parseScenario(mock));
+  if (!truck) notFound();
+
+  return <SharedTruckScreen truck={truck} />;
 }

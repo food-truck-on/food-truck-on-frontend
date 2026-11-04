@@ -137,6 +137,29 @@ export type ImportYesterdayResult = {
   menus: { id: number; name: string; price: number; is_sold_out: boolean }[];
 };
 
+/**
+ * 6-2. GET /api/v1/customer/food-trucks/:shareSlug — 공유 링크로 보는 트럭 한 대
+ *
+ * - status · 위치 · 시간: **오늘 영업을 안 하는 날 무엇이 오는지 명세에 없다.**
+ *   오늘 세션이 없으면 status가 null이고 위치·시간 칸도 null로 온다고 가정한다(2026-11-04, status.md).
+ *   2-1의 today_session 질문과 같은 문제다
+ * - 없는 슬러그는 404가 온다고 본다(명세 공통 에러). 목데이터 함수는 null을 돌려준다
+ * - distance_m: 명세에 있지만 6-2에는 lat·lng를 보낼 칸이 없어 계산할 수 없다(9/8 요청).
+ *   이 화면은 위치 권한을 묻지 않으므로 거리를 쓰지 않는다
+ */
+export type SharedTruck = {
+  id: number;
+  name: string;
+  status: SessionStatus | null;
+  location_label: string | null;
+  open_time: string | null;
+  close_time: string | null;
+  distance_m: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  menus: { id: number; name: string; price: number; is_sold_out: boolean }[];
+};
+
 /** 5-2. POST /api/v1/sessions/:sessionId/open — 오픈하기 */
 export type OpenResult = {
   id: number;

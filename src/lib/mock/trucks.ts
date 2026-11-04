@@ -8,7 +8,9 @@ import type { MyFoodTruck } from "./types";
 const myFoodTruck: MyFoodTruck = {
   id: 1,
   name: "타코야끼 달인",
-  share_url: "https://오늘어디서팔아요.kr/tk-달인-오늘",
+  // 명세 예시는 한글 슬러그(tk-달인-오늘)다. 슬러그 규칙이 [미정]이라 영문 임시값으로 바꿨다(11/4).
+  // 미리보기 버튼이 /t/takoyaki-dalin(sharedTrucks.ts)으로 이어진다
+  share_url: "https://오늘어디서팔아요.kr/takoyaki-dalin",
   today_session: {
     status: "preparing",
     location_label: "행복아파트 정문 앞",

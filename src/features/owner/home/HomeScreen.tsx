@@ -13,6 +13,7 @@ import {
 } from "@/lib/mock/sessions";
 import { getMyFoodTruck } from "@/lib/mock/trucks";
 import type { MyFoodTruck, TodaySession } from "@/lib/mock/types";
+import { formatHours as formatHoursText } from "@/lib/time";
 import { HoursSheet } from "./HoursSheet";
 import styles from "./HomeScreen.module.css";
 
@@ -402,18 +403,7 @@ function formatToday(date?: string): string {
 
 /** "16:00" "21:00" → "오후 4시 ~ 오후 9시". 한쪽이라도 없으면 null */
 function formatHours(session: TodaySession | null): string | null {
-  if (!session?.open_time || !session.close_time) return null;
-  return `${formatTime(session.open_time)} ~ ${formatTime(session.close_time)}`;
-}
-
-/** "16:00" → "오후 4시", "16:30" → "오후 4시 30분" */
-function formatTime(value: string): string {
-  const [hour, minute] = value.split(":").map(Number);
-  const meridiem = hour < 12 ? "오전" : "오후";
-  const display = hour % 12 === 0 ? 12 : hour % 12;
-  return minute === 0
-    ? `${meridiem} ${display}시`
-    : `${meridiem} ${display}시 ${minute}분`;
+  return formatHoursText(session?.open_time, session?.close_time);
 }
 
 /**
