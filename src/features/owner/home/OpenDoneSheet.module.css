@@ -1,0 +1,72 @@
+/* 오픈 완료 시트 — 피그마 `13` `14`. 시트 틀(여백·모서리·안전영역)은 BottomSheet가 정한다 */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+
+  text-align: center;
+  word-break: keep-all;
+}
+
+.icon {
+  font: var(--font-display);
+}
+
+.title {
+  font: var(--font-title);
+  color: var(--text-default);
+}
+
+.desc {
+  font: var(--font-body);
+  color: var(--text-secondary);
+}
+
+/* 흰 시트 위라 --bg-page 면으로 구분한다. 긴 주소는 칸 안에서 줄바꿈한다 */
+.link {
+  padding: var(--space-3) var(--space-4);
+
+  font: var(--font-caption);
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+
+  background: var(--bg-page);
+  border-radius: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/*
+ * "복사했어요" — 피그마 `14`의 초록 칸.
+ * 버튼이 아니라 상태 표시라 Button을 쓰지 않는다. 대신 Button과 같은 여백·줄 높이·테두리·모서리를 써서
+ * 버튼 자리에 그대로 겹쳐 앉는다(토스트와 같은 방법, 9/22).
+ */
+.copied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4);
+
+  font: var(--font-body);
+  color: var(--status-open);
+
+  background: var(--status-open-bg);
+  border: 1px solid transparent;
+  border-radius: var(--space-3);
+}
+
+/* 오류 전용 색 토큰이 없다. ConfirmDialog의 error와 같은 임시값을 쓴다(status.md "오류 색 토큰") */
+.error {
+  font: var(--font-body);
+  color: var(--brand-primary-text);
+  text-align: center;
+  word-break: keep-all;
+}

@@ -13,8 +13,10 @@ import {
 } from "@/lib/mock/sessions";
 import { getMyFoodTruck } from "@/lib/mock/trucks";
 import type { MyFoodTruck, TodaySession } from "@/lib/mock/types";
+import { shareLinkFrom, sharePathFrom } from "@/lib/site";
 import { formatHours as formatHoursText } from "@/lib/time";
 import { HoursSheet } from "./HoursSheet";
+import { OpenDoneSheet } from "./OpenDoneSheet";
 import styles from "./HomeScreen.module.css";
 
 type State =
@@ -41,6 +43,8 @@ export function HomeScreen() {
   const [pending, setPending] = useState(false);
   const [closeAsking, setCloseAsking] = useState(false);
   const [hoursOpen, setHoursOpen] = useState(false);
+  /** 오픈 직후 뜨는 시트(피그마 13·14). 링크를 바로 보내게 한다 */
+  const [openDone, setOpenDone] = useState(false);
   const [hoursSaving, setHoursSaving] = useState(false);
   /** 시트 안에 보여줄 실패 문구. 시트가 떠 있는 동안 토스트는 창 뒤에 깔려 보이지 않는다 */
   const [hoursError, setHoursError] = useState<string>();
@@ -104,8 +108,8 @@ export function HomeScreen() {
     try {
       const result = await openSession(session.id);
       patchSession({ status: result.status });
-      // "오픈하기"를 눌렀으니 토스트도 같은 말을 쓴다
-      toast("오픈했어요. 손님들이 지금 찾아올 수 있어요");
+      // 토스트 대신 오픈 완료 시트를 띄운다. 시트 제목이 "오픈했어요"로 같은 말을 한다
+      setOpenDone(true);
     } catch {
       toast("오픈하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
     } finally {
@@ -209,11 +213,12 @@ export function HomeScreen() {
       {isOpen ? (
         <section className={styles.share}>
           <h2 className={styles.shareTitle}>손님 초대 링크</h2>
-          <p className={styles.shareUrl}>{truck.share_url}</p>
+          {/* 백엔드 share_url이 아니라 지금 배포된 주소로 만든 링크를 보여 주고 복사한다(lib/site.ts) */}
+          <p className={styles.shareUrl}>{shareLinkFrom(truck.share_url)}</p>
           <div className={styles.shareActions}>
             <Button
               variant="secondary"
-              onClick={() => void handleCopyLink(truck.share_url)}
+              onClick={() => void handleCopyLink(shareLinkFrom(truck.share_url))}
             >
               링크 복사하기
             </Button>
@@ -221,7 +226,7 @@ export function HomeScreen() {
              * "손님 보기"는 탭이 아니다(2026-09-16 확정).
              * 다른 트럭까지 보이는 /nearby가 아니라 내 트럭의 공유 페이지만 연다.
              */}
-            <Link className={styles.previewLink} href={toSharePath(truck.share_url)}>
+            <Link className={styles.previewLink} href={sharePathFrom(truck.share_url)}>
               내 가게 페이지 미리보기
             </Link>
           </div>
@@ -279,6 +284,12 @@ export function HomeScreen() {
           setHoursError(undefined);
         }}
       />
+
+      <OpenDoneSheet
+        open={openDone}
+        link={shareLinkFrom(truck.share_url)}
+        onClose={() => setOpenDone(false)}
+      />
     </main>
   );
 }
@@ -302,7 +313,7 @@ function SettingRow({
     <>
       <span className={styles.rowLabel}>{label}</span>
       <span className={filled ? styles.rowValue : styles.rowEmpty}>
-        {value ?? "아직 설정하지 않았어요"}
+        {filled ? value : "아직 설정하지 않았어요"}
       </span>
     </>
   );
@@ -404,16 +415,4 @@ function formatToday(date?: string): string {
 /** "16:00" "21:00" → "오후 4시 ~ 오후 9시". 한쪽이라도 없으면 null */
 function formatHours(session: TodaySession | null): string | null {
   return formatHoursText(session?.open_time, session?.close_time);
-}
-
-/**
- * share_url에서 슬러그만 떼어 /t/:slug로 조립한다.
- *
- * 백엔드가 전체 URL을 주는데(`https://오늘어디서팔아요.kr/tk-달인-오늘`) 도메인이 바뀌면
- * 링크가 죽는다. 슬러그만 저장해 달라고 요청해 둔 상태다(status.md).
- * 요청이 반영되면 이 함수는 사라진다.
- */
-function toSharePath(shareUrl: string): string {
-  const slug = shareUrl.split("/").filter(Boolean).at(-1) ?? "";
-  return `/t/${slug}`;
 }
