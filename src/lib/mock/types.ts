@@ -6,6 +6,23 @@
  * 프론트 입맛대로 `isSoldOut`으로 바꾸면 연동할 때 전부 다시 고쳐야 한다.
  */
 
+/** 소셜 로그인 제공자. 명세 1-1 */
+export type SocialProvider = "kakao" | "google";
+
+/**
+ * 1-1. POST /api/v1/auth/social — 소셜 로그인 응답
+ *
+ * - 요청은 `{ provider, provider_token }`이다. frontend.md는 "code를 넘긴다"라고 적었는데
+ *   명세는 provider_token이다. 어느 쪽인지 확인이 필요하다(2026-11-05, status.md)
+ * - is_new_user: true면 원래는 가게 정보 등록(00-1~00-4)으로 가야 한다. MVP에서 뺀 화면이라 지금은 홈으로 보낸다
+ */
+export type SocialLoginResult = {
+  access_token: string;
+  refresh_token: string;
+  user: { id: number; nickname: string };
+  is_new_user: boolean;
+};
+
 /** 오늘 영업 상태. 명세 2-1, 5-1 */
 export type SessionStatus = "preparing" | "open" | "closed";
 

@@ -1,11 +1,7 @@
-import { RoutePlaceholder } from "@/components/RoutePlaceholder/RoutePlaceholder";
+import { LoginScreen } from "@/features/auth/LoginScreen";
 
-export default function LoginPage() {
-  return (
-    <RoutePlaceholder
-      path="/login"
-      title="사장님 로그인"
-      note="카카오 · 구글. 실제 연동은 3주차. 구글은 웹뷰 안에서 OAuth가 차단되므로 외부 브라우저로 띄운다"
-    />
-  );
+/** 사장님 로그인. 주소 끝 ?mock=cancel | error | slow 로 돌아온 뒤의 상황을 바꿔 볼 수 있다 */
+export default async function LoginPage({ searchParams }: PageProps<"/login">) {
+  const { mock } = await searchParams;
+  return <LoginScreen mock={typeof mock === "string" ? mock : null} />;
 }

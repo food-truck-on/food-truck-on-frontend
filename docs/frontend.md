@@ -54,12 +54,14 @@ App Router와 충돌한다. 라우트 화면은 전부 `src/app/` 아래에 둔�
 |---|---|---|
 | `/` | `app/page.tsx` | 스플래시 → 역할 선택 |
 | `/login` | `app/login/page.tsx` | 사장님 로그인 |
+| `/login/callback` | `app/login/callback/page.tsx` | 카카오·구글 인증에서 돌아오는 자리. 로딩 · 취소 · 실패 (2026-11-05 추가) |
 | `/owner` | `app/owner/page.tsx` | 사장님 홈. 로그인 필수. 하단 탭 `home` |
 | `/owner/location` | `app/owner/location/page.tsx` | 위치 정하기. 하단 탭 `location` |
 | `/owner/menu` | `app/owner/menu/page.tsx` | 메뉴 정하기. 하단 탭 `menu` |
 | `/nearby` | `app/nearby/page.tsx` | 손님 — 주변 트럭 목록 |
 | `/t/:slug` | `app/t/[slug]/page.tsx` | **공유 링크로 들어오는 단일 트럭 페이지. 로그인 불필요** |
 | `/dev/components` | `app/dev/components/page.tsx` | 공통 컴포넌트·토큰 확인용. **개발 전용 — 배포 전 폴더째 지운다** |
+| `/dev/shortcuts` | `app/dev/shortcuts/page.tsx` | 화면·목데이터 상황 바로가기, 목 로그아웃. **개발 전용 — `/dev` 폴더째 지운다** (2026-11-05 추가) |
 
 `/t/:slug`는 이 서비스의 핵심 진입점이다. 다른 화면에 의존하지 않고 단독으로 완결돼야 한다.
 
