@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Jua } from "next/font/google";
 import { ToastProvider } from "@/components/Toast/Toast";
+import { siteName, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 /*
@@ -19,7 +20,9 @@ const jua = Jua({
 });
 
 export const metadata: Metadata = {
-  title: "오늘 어디서 팔아요",
+  // 미리보기 이미지·링크를 상대 주소로 써도 절대 주소로 바꿔 준다(lib/site.ts)
+  metadataBase: siteUrl,
+  title: siteName,
   description: "오늘 푸드트럭이 어디서 여는지 알려드려요",
 };
 

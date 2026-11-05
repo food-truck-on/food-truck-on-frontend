@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SharedTruckScreen } from "@/features/customer/share/SharedTruckScreen";
+import { shareDescription, shareTitle } from "@/features/customer/share/shareText";
 import { parseScenario } from "@/lib/mock/mockFetch";
 import { getSharedTruck } from "@/lib/mock/sharedTrucks";
+import { siteName } from "@/lib/site";
 
 /*
  * 공유 링크로 들어오는 단일 트럭 페이지. 로그인 불필요.
@@ -17,6 +20,37 @@ import { getSharedTruck } from "@/lib/mock/sharedTrucks";
  *
  * 목데이터 확인: 주소 끝에 ?mock=slow | error | empty (lib/mock/mockFetch.ts)
  */
+
+/**
+ * 카카오톡 미리보기 제목·설명. 이미지는 같은 폴더의 opengraph-image.tsx가 붙인다.
+ * 본문과 같은 데이터를 쓴다 — getSharedTruck이 cache로 감싸져 있어 한 번만 불린다.
+ */
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps<"/t/[slug]">): Promise<Metadata> {
+  const { slug } = await params;
+  const { mock } = await searchParams;
+
+  const truck = await getSharedTruck(slug, parseScenario(mock));
+  if (!truck) return { title: `트럭을 찾을 수 없어요 · ${siteName}` };
+
+  const title = shareTitle(truck);
+  const description = shareDescription(truck);
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `/t/${slug}`,
+      siteName,
+      locale: "ko_KR",
+      type: "website",
+    },
+  };
+}
 export default async function SharedTruckPage({
   params,
   searchParams,
