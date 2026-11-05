@@ -16,15 +16,12 @@ function todayKst(): string {
 }
 
 /**
- * 목데이터 원본. 사장님 홈은 이 값의 status에 따라 세 가지로 갈린다.
- *   null      → 01 홈 / 빈 상태
+ * 다 채운 세션 견본. 주소 끝 ?session=preparing|open|closed 로 각 화면을 바로 볼 때 쓴다.
  *   preparing → 12 홈 / 오픈 준비 완료
  *   open      → 15 홈 / 영업 중
  *   closed    → 18 홈 / 영업 종료
- *
- * 화면을 갈아 끼워 보려면 주소 끝에 ?session=… 을 붙인다. mockFetch의 ?mock=… 과 같은 방식이다.
  */
-let todaySession: TodaySession | null = {
+const readySession: TodaySession = {
   id: 1,
   date: todayKst(),
   status: "preparing",
@@ -37,6 +34,25 @@ let todaySession: TodaySession | null = {
   close_time: "21:00",
 };
 
+/**
+ * 목데이터 원본. **로그인 직후는 아무것도 정하지 않은 하루의 시작이다(2026-11-05).**
+ * 전에는 견본처럼 다 채워진 채로 시작해서 "어제 메뉴 불러오기"를 누를 이유가 없었다.
+ * 비워 두면 위치 정하기 → 어제 메뉴 불러오기 → 영업시간 → 오픈하기 → 마감을 처음부터 끝까지 밟는다.
+ *
+ * 목데이터는 브라우저 탭 메모리에 있어서 새로고침하면 이 값으로 돌아간다.
+ * 그래서 로그아웃은 페이지를 새로 불러온다(dev/shortcuts).
+ *
+ * ?session=none 이면 오늘 세션 자체가 없는 01 홈 / 빈 상태다.
+ */
+let todaySession: TodaySession | null = {
+  ...readySession,
+  location_label: "",
+  menu_count: 0,
+  menus: [],
+  open_time: null,
+  close_time: null,
+};
+
 /** 주소 끝의 ?session=none|preparing|open|closed 을 읽는다. 없으면 원본 그대로 */
 function scenarioSession(): TodaySession | null {
   if (typeof window === "undefined") return todaySession;
@@ -44,7 +60,7 @@ function scenarioSession(): TodaySession | null {
   const value = new URLSearchParams(window.location.search).get("session");
   if (value === "none") return null;
   if (value === "preparing" || value === "open" || value === "closed") {
-    return todaySession && { ...todaySession, status: value };
+    return { ...readySession, status: value };
   }
   return todaySession;
 }
