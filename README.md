@@ -85,6 +85,7 @@ src/
 |---|---|
 | [`docs/product-rules.md`](docs/product-rules.md) | 제품 규칙 — 영업 상태 판정, 품절, 공유 링크, 알림 범위 |
 | [`docs/design-system.md`](docs/design-system.md) | 디자인 토큰, 컴포넌트, 접근성 기준 |
+| [`docs/design.md`](docs/design.md) | 디자인 문서 — 누구를 위해 디자인했나, 원칙, 2026-11-11 검토에서 드러난 것과 고친 것 |
 | [`docs/frontend.md`](docs/frontend.md) | 스택 결정 근거, 라우팅, 웹뷰 대응 |
 | [`docs/devlog/`](docs/devlog) | 개발일지 — 매일 무엇을 왜 했는지 |
 
