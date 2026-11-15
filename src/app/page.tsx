@@ -10,7 +10,8 @@ import styles from "@/features/auth/auth.module.css";
  * 앱처럼 불러올 것도 없다. 로고를 위에 두어 스플래시 역할을 하고, 버튼을 바로 아래에 둔다.
  *
  * "손님으로 둘러보기"(/nearby)는 MVP에서 뺐다(11/9 회의에서 정한다).
- * 눌러도 아무 일 없는 활성 버튼을 두지 않는다는 규칙(product-rules.md "알림")에 맞춰 비활성 + "준비 중"으로 둔다.
+ * 눌러도 아무 일 없는 활성 버튼을 두지 않는다는 규칙(product-rules.md "알림")에 맞춰 비활성으로 두고,
+ * 아직 준비하고 있다는 말은 **버튼 아래 글자**로 보인다. 버튼 안의 칩은 버튼과 같이 흐려져 읽히지 않았다(2026-11-11).
  * 손님의 주된 입구는 사장님이 보낸 공유 링크(/t/:slug)라 그것을 안내한다.
  */
 export default function StartPage() {
@@ -30,10 +31,10 @@ export default function StartPage() {
         </Link>
         <Button block variant="secondary" disabled>
           손님으로 둘러보기
-          <span className={styles.soon}>준비 중</span>
         </Button>
         <p className={styles.caption}>
-          손님은 사장님이 보낸 링크로 앱 설치 없이 바로 볼 수 있어요
+          둘러보기는 아직 준비하고 있어요. 손님은 사장님이 보낸 링크로 앱 설치 없이
+          바로 볼 수 있어요
         </p>
 
         {/* 개발 서버에서만 보인다. 11/8 /dev 폴더를 지울 때 이 줄도 지운다 */}

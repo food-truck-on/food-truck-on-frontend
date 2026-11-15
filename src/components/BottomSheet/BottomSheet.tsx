@@ -36,7 +36,16 @@ export function BottomSheet({
     const dialog = ref.current;
     if (!dialog) return;
 
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      /*
+       * showModal()은 창 안의 **첫 번째** 버튼에 포커스를 준다. 확인창에서는 그게 "마감하기"라
+       * Enter 한 번에 되돌릴 수 없는 동작이 일어난다. React의 autoFocus는 창이 닫혀 있을 때
+       * 한 번 실행되고 끝나서 소용이 없다(2026-11-11 측정: 연 직후 포커스가 "마감하기"였다).
+       * 그래서 창을 연 직후에 data-autofocus가 붙은 요소로 포커스를 직접 옮긴다.
+       */
+      dialog.querySelector<HTMLElement>("[data-autofocus]")?.focus();
+    }
     if (!open && dialog.open) dialog.close();
 
     if (!open) return;

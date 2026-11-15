@@ -80,16 +80,6 @@
   filter: brightness(0.92);
 }
 
-.soon {
-  padding: 0 var(--space-2);
-
-  font: var(--font-label);
-  color: var(--text-muted);
-
-  background: var(--bg-page);
-  border-radius: var(--space-2);
-}
-
 /* 이동 중 · 처리 중 안내. 스크린리더가 바뀐 순간 읽는다(role="status") */
 .status {
   font: var(--font-caption);

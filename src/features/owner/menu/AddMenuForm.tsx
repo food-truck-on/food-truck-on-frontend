@@ -40,8 +40,6 @@ export function AddMenuForm({ saving, onSubmit, onCancel }: Props) {
       className={styles.addForm}
       onSubmit={handleSubmit}
       noValidate
-      // 입력 카드가 열려 있는 동안에는 이 카드가 하단 버튼 자리다
-      data-bottom-cta
     >
       <TextInput
         label="메뉴 이름"

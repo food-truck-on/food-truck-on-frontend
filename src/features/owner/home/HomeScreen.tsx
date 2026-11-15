@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
 import { useToast } from "@/components/Toast/Toast";
+import { shareToKakao } from "@/lib/kakao/share";
 import {
   closeSession,
   getTodaySession,
@@ -49,6 +50,8 @@ export function HomeScreen() {
   /** 시트 안에 보여줄 실패 문구. 시트가 떠 있는 동안 토스트는 창 뒤에 깔려 보이지 않는다 */
   const [hoursError, setHoursError] = useState<string>();
   const [closeError, setCloseError] = useState<string>();
+  /** 카카오톡 공유 창을 여는 중. SDK를 처음 불러올 때 1~2초 걸린다 */
+  const [sharing, setSharing] = useState(false);
 
   const load = useCallback(async () => {
     setState({ kind: "loading" });
@@ -111,7 +114,7 @@ export function HomeScreen() {
       // 토스트 대신 오픈 완료 시트를 띄운다. 시트 제목이 "오픈했어요"로 같은 말을 한다
       setOpenDone(true);
     } catch {
-      toast("오픈하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
+      toast("오픈하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요", "notice");
     } finally {
       setPending(false);
     }
@@ -140,7 +143,27 @@ export function HomeScreen() {
       toast("링크를 복사했어요");
     } catch {
       // 웹뷰나 http 환경에서는 클립보드가 막혀 있을 수 있다
-      toast("링크를 복사하지 못했어요. 주소를 길게 눌러 복사해 주세요");
+      toast("링크를 복사하지 못했어요. 주소를 길게 눌러 복사해 주세요", "notice");
+    }
+  }
+
+  /**
+   * 영업 중 홈에서도 카카오톡으로 보낼 수 있어야 한다(2026-11-11).
+   * 전에는 오픈 직후 시트에만 있어서, 시트를 닫으면 "링크 복사하기"밖에 남지 않았다.
+   * 카카오톡 창이 뜨는 게 곧 결과라 성공 토스트는 띄우지 않는다.
+   */
+  async function handleKakao(shareUrl: string) {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      await shareToKakao(shareUrl);
+    } catch {
+      toast(
+        "카카오톡을 열지 못했어요. 링크를 복사해서 카카오톡에 붙여 넣어 주세요",
+        "notice",
+      );
+    } finally {
+      setSharing(false);
     }
   }
 
@@ -174,6 +197,9 @@ export function HomeScreen() {
   }
 
   const isOpen = session?.status === "open";
+  const ready = session ? canOpen(session) : false;
+  const hint = openHint(session);
+  const shareUrl = shareLinkFrom(truck.share_url);
 
   return (
     <main className={styles.screen}>
@@ -186,8 +212,16 @@ export function HomeScreen() {
         ) : (
           <p className={styles.date}>{formatToday(session?.date)}</p>
         )}
+        {/*
+         * 머리말이 지금 상태를 말한다. 전에는 다 채운 뒤에도 "준비되셨나요?"를 물었다.
+         * 긴 제목 둘에는 트럭 그림을 붙이지 않는다 — 360px에서 그림만 혼자 다음 줄로 넘어갔다.
+         */}
         <h1 className={styles.title}>
-          {isOpen ? "손님들이 지금 찾아오고 있어요 🚚" : "오늘 영업 준비되셨나요? 🚚"}
+          {isOpen
+            ? "손님들이 지금 찾아오고 있어요"
+            : ready
+              ? "준비 끝! 이제 오픈만 하면 돼요"
+              : "오늘 영업 준비되셨나요? 🚚"}
         </h1>
       </header>
 
@@ -196,32 +230,27 @@ export function HomeScreen() {
           label="위치"
           value={session?.location_label}
           href="/owner/location"
+          plain={isOpen}
         />
         <SettingRow
           label="영업시간"
           value={formatHours(session)}
           // 오늘 세션이 없으면 저장할 곳이 없다. 누를 수 없는 줄로 둔다
           onClick={session ? () => setHoursOpen(true) : undefined}
+          plain={isOpen}
         />
         <SettingRow
           label="메뉴"
           value={session?.menus[0]?.name}
           href="/owner/menu"
+          plain={isOpen}
         />
       </ul>
 
       {isOpen ? (
         <section className={styles.share}>
-          <h2 className={styles.shareTitle}>손님 초대 링크</h2>
-          {/* 백엔드 share_url이 아니라 지금 배포된 주소로 만든 링크를 보여 주고 복사한다(lib/site.ts) */}
-          <p className={styles.shareUrl}>{shareLinkFrom(truck.share_url)}</p>
-          <div className={styles.shareActions}>
-            <Button
-              variant="secondary"
-              onClick={() => void handleCopyLink(shareLinkFrom(truck.share_url))}
-            >
-              링크 복사하기
-            </Button>
+          <div className={styles.shareHead}>
+            <h2 className={styles.shareTitle}>손님에게 공유할 링크</h2>
             {/*
              * "손님 보기"는 탭이 아니다(2026-09-16 확정).
              * 다른 트럭까지 보이는 /nearby가 아니라 내 트럭의 공유 페이지만 연다.
@@ -230,27 +259,54 @@ export function HomeScreen() {
               내 가게 페이지 미리보기
             </Link>
           </div>
+          {/* 백엔드 share_url이 아니라 지금 배포된 주소로 만든 링크를 보여 주고 복사한다(lib/site.ts) */}
+          <p className={styles.shareUrl}>{shareUrl}</p>
+          {/*
+           * 영업 중인 사장님이 여기서 제일 자주 할 일은 링크를 카톡방에 보내는 것이다.
+           * 그래서 카카오톡을 위에 두고, 복사는 보조로 둔다(오픈 완료 시트와 같은 순서).
+           */}
+          <div className={styles.shareActions}>
+            <Button
+              block
+              variant="kakao"
+              loading={sharing}
+              onClick={() => void handleKakao(shareUrl)}
+            >
+              카카오톡으로 공유하기
+            </Button>
+            <Button block variant="secondary" onClick={() => void handleCopyLink(shareUrl)}>
+              링크 복사하기
+            </Button>
+          </div>
         </section>
       ) : null}
 
-      <footer className={styles.footer} data-bottom-cta>
-        {session === null ? (
-          <Button block disabled>
-            위치와 메뉴를 먼저 설정해 주세요
-          </Button>
-        ) : isOpen ? (
+      {/*
+       * 오픈 전에는 버튼 위에 "무엇이 남았는지" 한 줄을 둔다(2026-11-11).
+       * 전에는 그 안내를 비활성 버튼 안에 넣었다. 비활성 버튼은 흐리게 칠해져서(불투명도 0.4)
+       * 대비가 1.62:1이었다 — 빈 화면에서 제일 필요한 말이 제일 안 보였다.
+       * 버튼 문구는 켜져 있든 꺼져 있든 "지금 오픈하기"다. 버튼은 누르면 일어날 일만 말한다.
+       */}
+      <footer
+        className={styles.footer}
+        data-bottom-cta={!isOpen && hint ? "with-hint" : ""}
+      >
+        {isOpen ? (
           <Button block variant="secondary" onClick={() => setCloseAsking(true)}>
             오늘 영업 마감하기
           </Button>
         ) : (
-          <Button
-            block
-            loading={pending}
-            disabled={!canOpen(session)}
-            onClick={() => void handleOpen(session)}
-          >
-            {canOpen(session) ? "🎉 지금 오픈하기" : "위치와 메뉴를 먼저 설정해 주세요"}
-          </Button>
+          <>
+            {hint ? <p className={styles.footerHint}>{hint}</p> : null}
+            <Button
+              block
+              loading={pending}
+              disabled={!session || !ready}
+              onClick={() => session && void handleOpen(session)}
+            >
+              🎉 지금 오픈하기
+            </Button>
+          </>
         )}
       </footer>
 
@@ -287,7 +343,7 @@ export function HomeScreen() {
 
       <OpenDoneSheet
         open={openDone}
-        link={shareLinkFrom(truck.share_url)}
+        link={shareUrl}
         onClose={() => setOpenDone(false)}
       />
     </main>
@@ -300,6 +356,7 @@ function SettingRow({
   value,
   href,
   onClick,
+  plain = false,
 }: {
   label: string;
   value?: string | null;
@@ -307,19 +364,30 @@ function SettingRow({
   href?: string;
   /** 이 화면에서 창을 여는 줄. href와 같이 쓰지 않는다 */
   onClick?: () => void;
+  /**
+   * 영업 중에는 채워진 줄을 주황으로 칠하지 않는다(피그마 `15`와 같다).
+   * 주황 면은 "하나씩 채워 가는 중"을 보여 주는 표시인데, 오픈한 뒤에는 그 뜻이 끝났다.
+   * 그대로 두면 초록 머리말 · 주황 줄 · 노랑 카카오 버튼이 한 화면에서 겨룬다.
+   */
+  plain?: boolean;
 }) {
   const filled = Boolean(value);
   const body = (
     <>
       <span className={styles.rowLabel}>{label}</span>
       <span className={filled ? styles.rowValue : styles.rowEmpty}>
-        {filled ? value : "아직 설정하지 않았어요"}
+        {/* 탭 이름이 "위치 정하기" · "메뉴 정하기"다. 같은 동작은 같은 단어로 — "설정"이 아니라 "정하기" */}
+        {filled ? value : "아직 정하지 않았어요"}
       </span>
     </>
   );
 
   return (
-    <li className={filled ? styles.rowFilled : styles.row}>
+    <li
+      className={
+        filled ? (plain ? styles.rowPlain : styles.rowFilled) : styles.row
+      }
+    >
       {/*
        * 갈 곳도 열 창도 없는 항목은 누를 수 있게 만들지 않는다.
        * 눌러도 아무 일이 없는 버튼을 두면 데모에서 반드시 눌린다.
@@ -373,7 +441,10 @@ function ClosedNotice({ session }: { session: TodaySession }) {
         </div>
       </dl>
 
-      <p className={styles.closedOutro}>푹 쉬고 내일 또 힘내볼까요?</p>
+      {/* 마감 직후 "오늘 영업을 마감했어요" 토스트가 이 글자를 덮지 않게 하단 요소로 표시한다(globals.css) */}
+      <p className={styles.closedOutro} data-bottom-cta>
+        푹 쉬고 내일 또 힘내볼까요?
+      </p>
     </section>
   );
 }
@@ -398,6 +469,20 @@ function HomeSkeleton() {
 /** 위치와 메뉴가 둘 다 있어야 오픈할 수 있다. 명세 5-2의 조건과 같다 */
 function canOpen(session: TodaySession): boolean {
   return Boolean(session.location_label) && session.menu_count > 0;
+}
+
+/**
+ * 오픈하려면 무엇이 남았는지 한 줄로. 다 됐으면 null — 버튼이 켜진 것으로 충분하다.
+ * 영업시간은 넣지 않는다. 오픈 조건인지 아직 정해지지 않았다(product-rules.md `[미정]`).
+ */
+function openHint(session: TodaySession | null): string | null {
+  const needLocation = !session?.location_label;
+  const needMenu = !session || session.menu_count === 0;
+
+  if (needLocation && needMenu) return "위치와 메뉴를 정하면 오픈할 수 있어요";
+  if (needLocation) return "위치만 정하면 오픈할 수 있어요";
+  if (needMenu) return "메뉴만 정하면 오픈할 수 있어요";
+  return null;
 }
 
 /** "2026-09-20" → "2026년 9월 20일 (일요일)". 값이 없으면 오늘 날짜를 쓴다 */

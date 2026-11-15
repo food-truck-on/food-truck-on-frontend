@@ -1,7 +1,6 @@
 import { mockFetch } from "./mockFetch";
 import type {
   CloseResult,
-  ImportYesterdayResult,
   OpenResult,
   SessionHoursRequest,
   SessionHoursResult,
@@ -155,43 +154,37 @@ export async function setSessionHours(
   return result;
 }
 
-/** 어제 세션의 메뉴 스냅샷. 명세 4-5 예시와 같다. 어제 가격 그대로라 오늘 마스터 가격과 다를 수 있다 */
-const yesterdayMenus: ImportYesterdayResult["menus"] = [
-  { id: 1, name: "타코야끼 8알", price: 5000, is_sold_out: false },
-  { id: 2, name: "타코야끼 12알", price: 7000, is_sold_out: false },
-  { id: 3, name: "치즈 타코야끼", price: 6000, is_sold_out: false },
-];
-
 /**
- * 4-5. POST /api/v1/sessions/:sessionId/menus/import-yesterday 자리.
- * 성공하면 오늘 세션의 메뉴가 채워진다 — 홈의 "메뉴" 줄과 "지금 오픈하기" 조건이 이 값을 본다.
+ * 오늘 세션의 메뉴 요약을 메뉴 목록에 맞춘다. 메뉴 정하기 화면의 목록이 곧 **오늘 팔 메뉴**다(2026-11-11).
  *
- * ?mock=empty 이면 어제 영업이 없던 날로 보고 0개를 돌려준다.
+ * 전에는 목록(트럭 전체 메뉴)과 오늘 세션의 메뉴가 따로 놀았다. 메뉴를 직접 추가해도 홈의 "메뉴" 줄이
+ * 비어 있어서, 어제 영업이 없던 사장님은 오픈할 수 없었다. 품절을 `SessionMenu`(그날 스냅샷)에만
+ * 기록한다는 규칙(product-rules.md "품절")과도 어긋났다.
+ *
+ * 메뉴를 추가하거나 어제 메뉴를 불러올 때 menus.ts가 이 함수를 부른다.
+ * 홈의 "메뉴" 줄과 "지금 오픈하기" 조건이 이 값을 본다.
+ *
+ * @param sessionId 주면 그 세션일 때만 바꾼다. 4-5처럼 세션 id를 받는 호출에서 쓴다
  */
-export async function importYesterdayMenus(
-  sessionId: number,
-): Promise<ImportYesterdayResult> {
-  const result = await mockFetch<ImportYesterdayResult>(
-    { imported_count: yesterdayMenus.length, menus: yesterdayMenus },
-    { imported_count: 0, menus: [] },
-  );
+export function syncSessionMenus(
+  menus: { id: number; name: string }[],
+  sessionId?: number,
+): void {
+  if (!todaySession) return;
+  if (sessionId !== undefined && todaySession.id !== sessionId) return;
 
-  if (todaySession && todaySession.id === sessionId && result.imported_count > 0) {
-    const [first] = result.menus;
-    todaySession = {
-      ...todaySession,
-      menu_count: result.imported_count,
-      // 5-1이 "외 N개"로 조합된 문구를 주는 모양을 따른다(수정 요청 중, types.ts)
-      menus: [
-        {
-          id: first.id,
-          name:
-            result.imported_count > 1
-              ? `${first.name} 외 ${result.imported_count - 1}개`
-              : first.name,
-        },
-      ],
-    };
-  }
-  return result;
+  const [first] = menus;
+  todaySession = {
+    ...todaySession,
+    menu_count: menus.length,
+    // 5-1이 "외 N개"로 조합된 문구를 주는 모양을 따른다(수정 요청 중, types.ts)
+    menus: first
+      ? [
+          {
+            id: first.id,
+            name: menus.length > 1 ? `${first.name} 외 ${menus.length - 1}개` : first.name,
+          },
+        ]
+      : [],
+  };
 }

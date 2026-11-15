@@ -14,6 +14,10 @@
   border-radius: var(--space-3);
 }
 
+/* ---------------------------------------------------------------
+ * 읽기 전용 (손님 화면) — 메뉴명 · 배지 · 가격이 한 줄
+ * --------------------------------------------------------------- */
+
 .head {
   display: flex;
   gap: var(--space-2);
@@ -36,15 +40,44 @@
 .price {
   flex-shrink: 0;
 
-  /* 메뉴명(subtitle) 첫 줄과 기준선을 맞춘다 */
   font: var(--font-body);
-  line-height: var(--font-subtitle-line);
   color: var(--text-secondary);
 }
 
+/* 메뉴명(subtitle) 첫 줄과 기준선을 맞춘다 */
+.head .price {
+  line-height: var(--font-subtitle-line);
+}
+
+/* ---------------------------------------------------------------
+ * 품절 토글이 붙는 카드 (사장님 화면) — 피그마 `08`
+ * 왼쪽에 메뉴명·가격, 오른쪽에 토글. 한 줄이라 메뉴 여러 개가 한 화면에 들어온다.
+ * --------------------------------------------------------------- */
+
+.editable {
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 메뉴명이 길면 이 칸이 줄바꿈으로 늘어난다. 토글은 밀리지 않는다 */
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  min-width: 0;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* 토글은 글자 길이만큼만 차지한다. 폭을 채우면 메뉴명 칸을 밀어낸다 */
 .action {
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--border-default);
+  flex: none;
 }
 
 /* ---------------------------------------------------------------
@@ -68,12 +101,15 @@
   padding: 0 var(--space-2);
 
   font: var(--font-label);
-  /* 메뉴명 첫 줄 높이 안에서 세로 가운데에 오도록 */
-  margin-top: var(--space-1);
   line-height: var(--font-subtitle-size);
   color: var(--text-secondary);
 
   background: var(--bg-page);
   border: 1px solid var(--border-default);
   border-radius: var(--space-1);
+}
+
+/* 메뉴명 첫 줄 높이 안에서 세로 가운데에 오도록 */
+.head .badge {
+  margin-top: var(--space-1);
 }

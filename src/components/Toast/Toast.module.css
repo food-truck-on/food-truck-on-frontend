@@ -1,10 +1,18 @@
 /*
- * 하단 탭 바로 위에 띄운다. 하단 버튼이 있는 화면에서는 **그 버튼 위에 같은 크기로 겹친다.**
- * 반쯤 걸쳐 덮으면 버튼인지 알림인지 애매해 보인다. 딱 겹쳐 잠깐 버튼 자리를 알림이 쓰는 모양이다.
- * 자리(--toast-clear-*)는 globals.css에서 화면에 무엇이 있는지 보고 정한다.
+ * 토스트 — 화면 아래에 잠깐 뜨는 작은 알림.
  *
- * 누를 수 없는 알림이라 영역 전체의 포인터 이벤트를 끈다.
- * 토스트가 떠 있는 동안에도 뒤의 버튼을 그대로 누를 수 있어야 한다.
+ * 모양을 세 번 바꿨다.
+ *   9/22   하단 버튼 자리에 **같은 크기로 겹쳐** 띄웠다. 버튼과 여백·테두리·모서리까지 같았다
+ *   11/11  검토에서 두 가지가 드러났다. 토스트가 그 순간 눌러야 할 버튼을 2.5초 가렸고,
+ *          흰 면 + 테두리 + 폭 가득이라 버튼과 구별이 안 됐다. "알림이 버튼인 척하는" 모양이었다
+ *   지금   **작고 어두운 알약**이다. 글자 길이만큼만 차지하고, 하단 버튼 바로 위에 뜬다.
+ *          이 앱의 버튼·카드는 전부 밝은 면이라 어두운 면 하나로 "누르는 것이 아니다"가 전해진다
+ *
+ * 어두운 면 토큰(--bg-inverse)은 원래 영업 종료 화면 한 장에만 쓰기로 했다. 토스트를 두 번째 쓰임으로 더했다
+ * (design-system.md "어두운 면"). 새 색은 만들지 않았다.
+ *
+ * 자리(--toast-clear-*)는 globals.css에서 화면에 무엇이 있는지 보고 정한다.
+ * 누를 수 없는 알림이라 영역 전체의 포인터 이벤트를 끈다. 떠 있는 동안에도 뒤의 것을 누를 수 있다.
  */
 .region {
   position: fixed;
@@ -24,30 +32,50 @@
   pointer-events: none;
 }
 
-/*
- * 여백·줄 높이·테두리·모서리를 Button과 같게 둔다. 그래야 하단 버튼 위에 딱 겹친다.
- * Button: 여백 --space-3 --space-4 · --font-body · 테두리 1px · 모서리 --space-3
- *
- * 토스트 전용 색 토큰이 없다. 새 색을 만들지 않고 카드와 같은 면 + 테두리로 띄운다.
- * 페이지 배경(--bg-page) 위에서 흰 면과 테두리로 구분된다.
- */
 .toast {
-  width: 100%;
-  /* 버튼은 앱 폭(최대 480px)에서 좌우 여백을 뺀 폭이다. 넓은 화면에서도 같은 폭이 되게 */
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+
+  /* 글자 길이만큼만. 긴 문장은 화면 폭(좌우 여백 제외) 안에서 줄바꿈한다 */
   max-width: calc(var(--layout-max-width) - var(--space-4) * 2);
 
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-4);
 
-  font: var(--font-body);
-  color: var(--text-default);
-  text-align: center;
+  font: var(--font-caption);
+  color: var(--text-on-inverse);
   word-break: keep-all;
 
-  background: var(--bg-surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--space-3);
+  /*
+   * 뒤가 살짝 비치는 어두운 면이다. 꽉 막힌 검정보다 화면 위에 "잠깐 얹힌" 느낌이 난다.
+   * 어두운 면 토큰을 80%만 칠하고, 비치는 뒤쪽은 흐리게 해서 글자와 섞이지 않게 한다.
+   * 가장 밝은 배경(흰 면) 위에서도 흰 글자 대비가 9.1:1이다. 새 색은 만들지 않았다.
+   * backdrop-filter를 못 쓰는 브라우저에서는 흐림 없이 80% 어두운 면으로만 보인다 — 글자는 그대로 읽힌다.
+   */
+  background: color-mix(in srgb, var(--bg-inverse) 80%, transparent);
+  -webkit-backdrop-filter: blur(var(--space-2));
+  backdrop-filter: blur(var(--space-2));
+  /*
+   * 영업 종료 화면은 배경이 같은 어두운 색이다. 거기서도 알약의 가장자리가 보이게 옅은 테두리를 두른다.
+   * 밝은 화면에서는 거의 보이지 않는다. 새 색이 아니라 흰색을 옅게 섞은 것이다(종료 화면의 카드와 같은 방법).
+   */
+  border: 1px solid color-mix(in srgb, var(--text-on-inverse) 24%, transparent);
+  border-radius: var(--space-5);
 
   animation: toast-in 0.18s ease-out;
+}
+
+/*
+ * 아이콘은 보조 설명 한 줄 높이(sm)라 문장이 두 줄이 돼도 첫 줄 옆에 선다.
+ * 끝난 일은 체크, 못 한 일과 안내는 느낌표. 색이 아니라 모양으로 가른다 — 둘 다 흰색이다.
+ */
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.message {
+  min-width: 0;
 }
 
 @keyframes toast-in {

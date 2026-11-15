@@ -1,12 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button/Button";
 import { Icon } from "@/components/Icon/Icon";
 import { MenuCard } from "@/components/MenuCard/MenuCard";
 import { useToast } from "@/components/Toast/Toast";
-import { addMenu, getMenus, toggleSoldOut, type NewMenu } from "@/lib/mock/menus";
-import { getTodaySession, importYesterdayMenus } from "@/lib/mock/sessions";
+import {
+  addMenu,
+  getMenus,
+  importYesterdayMenus,
+  toggleSoldOut,
+  type NewMenu,
+} from "@/lib/mock/menus";
+import { getTodaySession } from "@/lib/mock/sessions";
 import type { Menu, TodaySession } from "@/lib/mock/types";
 import { AddMenuForm } from "./AddMenuForm";
 import styles from "./MenuScreen.module.css";
@@ -21,16 +28,23 @@ type State =
  * 로딩 · 에러 · 빈 상태 · 성공 네 상태를 갖는다.
  *
  * 피그마와 다르게 만든 것
- * - 아래 "저장" 버튼을 두지 않았다. 품절 토글도 메뉴 추가도 누르는 순간 저장된다.
- *   저장 버튼이 따로 있으면 "추가했는데 저장은 안 된" 상태가 생겨 손님 화면과 어긋난다
+ * - 품절 토글도 메뉴 추가도 **누르는 순간 저장된다.** 피그마의 "저장"처럼 눌러야 저장되는 버튼은 두지 않았다.
+ *   그런 버튼이 있으면 "추가했는데 저장은 안 된" 상태가 생겨 손님 화면과 어긋난다
+ * - 대신 맨 아래에 **"이 메뉴로 정하기"**를 뒀다(2026-11-11). 저장이 아니라 "다 골랐다"는 마무리다.
+ *   누르면 홈으로 돌아가 오픈 버튼 앞에 선다. 위치 정하기의 "이 위치로 정하기"와 같은 자리, 같은 역할이다.
+ *   전에는 메뉴를 다 넣고 나서 끝났다는 표시가 없어, 하단 탭을 직접 눌러 홈으로 가야 했다.
+ *   이 버튼을 누르지 않고 탭으로 나가도 잃는 것은 없다
  * - 메뉴 수정(연필)·삭제(휴지통)는 아직 만들지 않았다. product-rules.md "아직 없는 화면"에 올라가 있다
  *
- * 어제 메뉴 불러오기(4-5)는 **오늘 세션**에 메뉴를 넣는다. 이 화면의 목록(4-1)은 트럭의 전체 메뉴라
- * 불러와도 목록은 그대로고, 홈의 "메뉴" 줄이 채워진다. 두 목록을 어떻게 이을지는 백엔드에 물어본 상태다(status.md)
+ * **이 화면의 목록이 곧 오늘 팔 메뉴다(2026-11-11).** 빈 목록에서 시작해 어제 메뉴를 불러오거나 직접 추가한다.
+ * 불러와도 추가해도 목록과 홈의 "메뉴" 줄이 같이 채워진다(lib/mock/menus.ts).
+ * 전에는 목록이 트럭 전체 메뉴여서 추가해도 홈이 비어 있었고, 어제 영업이 없던 사장님은 오픈할 수 없었다.
+ * 실제 API에서 트럭 전체 메뉴(4-1)와 오늘 세션 메뉴를 어떻게 이을지는 백엔드에 물어본 상태다(status.md)
  *
  * 주소 끝에 ?mock=slow / error / empty 를 붙여 각 상태를 볼 수 있다.
  */
 export function MenuScreen() {
+  const router = useRouter();
   const toast = useToast();
   const [state, setState] = useState<State>({ kind: "loading" });
   /** 품절 토글 요청이 진행 중인 메뉴. 연타로 두 번 뒤집히지 않게 막는다 */
@@ -85,7 +99,10 @@ export function MenuScreen() {
           : "다시 판매로 바꿨어요. 손님 화면에도 바로 보여요",
       );
     } catch {
-      toast("품절 상태를 바꾸지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
+      toast(
+        "품절 상태를 바꾸지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요",
+        "notice",
+      );
     } finally {
       setPendingId(null);
     }
@@ -96,14 +113,22 @@ export function MenuScreen() {
     setImporting(true);
     try {
       const result = await importYesterdayMenus(session.id);
+      // 불러온 메뉴가 목록에 바로 보여야 한다. 스켈레톤으로 깜빡이지 않게 조용히 다시 받는다
+      const menus = (await getMenus()).filter((m) => m.is_active);
+      setState((prev) => (prev.kind === "success" ? { ...prev, menus } : prev));
       // "불러오기"를 눌렀으니 토스트도 같은 말을 쓴다. 빈 결과면 다음 행동을 알려준다
-      toast(
-        result.imported_count > 0
-          ? `어제 메뉴 ${result.imported_count}개를 불러왔어요. 홈에서 바로 오픈할 수 있어요`
-          : "어제 영업한 메뉴가 없어요. 아래에서 메뉴를 추가해 주세요",
-      );
+      if (result.imported_count > 0) {
+        toast(`어제 메뉴 ${result.imported_count}개를 불러왔어요`);
+      } else if (menus.length > 0) {
+        toast("어제 메뉴가 이미 다 들어 있어요", "notice");
+      } else {
+        toast("어제 영업한 메뉴가 없어요. 아래에서 메뉴를 추가해 주세요", "notice");
+      }
     } catch {
-      toast("어제 메뉴를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
+      toast(
+        "어제 메뉴를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요",
+        "notice",
+      );
     } finally {
       setImporting(false);
     }
@@ -122,10 +147,22 @@ export function MenuScreen() {
       toast("메뉴를 추가했어요");
     } catch {
       // 입력 카드를 닫지 않는다. 적어 둔 이름·가격을 그대로 두고 다시 누르게 한다
-      toast("메뉴를 추가하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
+      toast(
+        "메뉴를 추가하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요",
+        "notice",
+      );
     } finally {
       setAddSaving(false);
     }
+  }
+
+  /**
+   * 메뉴는 넣는 순간 이미 저장돼 있다. 여기서는 끝났다고 알리고 홈으로 돌아가기만 한다.
+   * "이 메뉴로 정하기"를 눌렀으니 토스트도 같은 말을 쓴다. 토스트는 앱 전체에 걸려 있어 홈에서도 보인다
+   */
+  function handleDone(count: number) {
+    toast(`메뉴 ${count}개를 정했어요`);
+    router.push("/owner");
   }
 
   return (
@@ -133,7 +170,8 @@ export function MenuScreen() {
       <header className={styles.header}>
         <h1 className={styles.title}>메뉴 정하기</h1>
         <p className={styles.desc}>
-          다 팔린 메뉴는 품절로 바꿔 주세요. 오늘 하루만 유지돼요
+          오늘 팔 메뉴를 정해 주세요. 다 팔린 메뉴는 품절로 바꿀 수 있고, 품절은
+          오늘 하루만 유지돼요
         </p>
       </header>
 
@@ -167,9 +205,11 @@ export function MenuScreen() {
 
       {state.kind === "success" && state.menus.length === 0 ? (
         <section className={styles.message}>
-          <h2 className={styles.messageTitle}>아직 등록한 메뉴가 없어요</h2>
+          <h2 className={styles.messageTitle}>오늘 팔 메뉴가 아직 없어요</h2>
           <p className={styles.messageDesc}>
-            아래 &ldquo;메뉴 추가하기&rdquo;를 누르면 손님 페이지에 메뉴와 가격이 보여요
+            {state.session
+              ? "위의 “어제 메뉴 불러오기”를 누르거나 “메뉴 추가하기”로 직접 넣어 주세요"
+              : "아래 “메뉴 추가하기”를 누르면 손님 페이지에 메뉴와 가격이 보여요"}
           </p>
         </section>
       ) : null}
@@ -197,16 +237,27 @@ export function MenuScreen() {
             onCancel={() => setAdding(false)}
           />
         ) : (
-          <Button
-            variant="secondary"
-            block
-            onClick={() => setAdding(true)}
-            data-bottom-cta
-          >
+          <Button variant="secondary" block onClick={() => setAdding(true)}>
             <Icon name="plus" size="sm" />
             메뉴 추가하기
           </Button>
         )
+      ) : null}
+
+      {/*
+       * 마무리 버튼. 입력 카드가 열려 있을 때는 숨긴다 — 그때의 주 버튼은 카드 안의 "추가하기" 하나여야 한다.
+       * 메뉴가 없으면 누를 수 없다. 무엇을 하면 되는지는 위의 빈 상태 문구가 이미 말한다.
+       */}
+      {state.kind === "success" && !adding ? (
+        <footer className={styles.footer} data-bottom-cta>
+          <Button
+            block
+            disabled={state.menus.length === 0}
+            onClick={() => handleDone(state.menus.length)}
+          >
+            이 메뉴로 정하기
+          </Button>
+        </footer>
       ) : null}
     </main>
   );

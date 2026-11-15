@@ -85,25 +85,30 @@ export function OpenDoneSheet({ open, link, onClose }: Props) {
         </p>
       </header>
 
-      <p className={styles.link} aria-label="손님 초대 링크">
+      <p className={styles.link} aria-label="손님에게 공유할 링크">
         {link}
       </p>
 
+      {/*
+       * 카카오톡이 주 행동이다(2026-11-11). 사장님은 이 링크를 카톡방에 보낸다.
+       * 전에는 주황 "링크 복사하기"가 맨 위였고 바로 아래 노랑 "카카오톡"이 붙어서
+       * 강조색 두 개가 같은 무게로 겨뤘다. 복사를 보조 버튼으로 내려 하나만 눈에 띄게 했다.
+       */}
       <div className={styles.actions}>
+        <Button block variant="kakao" loading={sharing} onClick={() => void handleKakao()}>
+          카카오톡으로 공유하기
+        </Button>
+
         {copied ? (
           // 버튼 자리를 같은 크기로 잠깐 차지한다. 스크린리더에는 바뀐 순간 읽어 준다
           <p className={styles.copied} role="status">
             ✓ 링크를 복사했어요
           </p>
         ) : (
-          <Button block onClick={() => void handleCopy()}>
+          <Button block variant="secondary" onClick={() => void handleCopy()}>
             링크 복사하기
           </Button>
         )}
-
-        <Button block variant="kakao" loading={sharing} onClick={() => void handleKakao()}>
-          카카오톡으로 공유하기
-        </Button>
 
         {error ? (
           <p className={styles.error} role="alert">

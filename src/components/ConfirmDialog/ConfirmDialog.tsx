@@ -93,7 +93,8 @@ export function ConfirmDialog({
           block
           disabled={confirmLoading}
           onClick={onCancel}
-          autoFocus
+          // 창이 열린 직후 BottomSheet가 이 표시를 찾아 포커스를 준다. autoFocus는 여기서 동작하지 않는다
+          data-autofocus
         >
           {cancelLabel}
         </Button>

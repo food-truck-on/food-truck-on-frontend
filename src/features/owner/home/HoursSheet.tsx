@@ -42,7 +42,7 @@ export function HoursSheet({
   return (
     <BottomSheet open={open} onClose={onClose} locked={saving} labelledBy={titleId}>
       <h2 id={titleId} className={styles.title}>
-        영업시간 설정
+        영업시간 정하기
       </h2>
       {/*
        * 열 때마다 새로 만든다. 저장하지 않고 닫았다가 다시 열면

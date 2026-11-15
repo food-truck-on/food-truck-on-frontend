@@ -32,7 +32,7 @@ export function LocationMap({ status, center, picked }: Props) {
       <div className={styles.mapFallback} role="status">
         <p className={styles.mapFallbackTitle}>지도를 불러오지 못했어요</p>
         <p className={styles.mapFallbackDesc}>
-          아래 자주 가는 장소에서 고르면 그대로 설정돼요
+          아래 자주 가는 장소에서 골라도 위치를 정할 수 있어요
         </p>
       </div>
     );

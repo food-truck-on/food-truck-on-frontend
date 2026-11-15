@@ -102,8 +102,10 @@ async function render(content: Content) {
               display: "flex",
               padding: `${scaled("--space-2")}px ${scaled("--space-4")}px`,
               fontSize: scaled("--font-caption-size"),
+              // "영업 중" 글자는 초록(--status-open)이 아니라 --text-default로 쓴다. 초록 면 위에서
+              // 초록 글자는 3.92:1이다. 화면의 상태 배지와 같은 규칙이다(tokens.css, 2026-11-11)
               color: token(
-                content.badge.open ? "--status-open" : "--text-muted",
+                content.badge.open ? "--text-default" : "--text-muted",
               ),
               background: token(
                 content.badge.open ? "--status-open-bg" : "--bg-surface",

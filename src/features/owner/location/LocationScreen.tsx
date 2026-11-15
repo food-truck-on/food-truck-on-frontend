@@ -32,7 +32,8 @@ type Picked = {
 /**
  * 위치 정하기 (/owner/location). 피그마 `02 위치 정하기 / 기본` · `03 위치 정하기 / 장소 선택됨`.
  *
- * 자주 가는 장소를 누르거나 현재 위치를 불러와 고른 뒤, "이 위치로 설정"을 눌러야 저장된다.
+ * 자주 가는 장소를 누르거나 현재 위치를 불러와 고른 뒤, "이 위치로 정하기"를 눌러야 저장된다.
+ * (버튼·토스트·홈의 빈 줄 문구를 탭 이름 "위치 정하기"와 같은 단어로 맞췄다. 전에는 "설정"이 섞여 있었다 — 2026-11-11)
  * 고르기만 해서는 저장되지 않는다 — 잘못 누른 장소가 바로 손님 화면에 나가면 안 된다.
  *
  * 주소 끝에 ?mock=slow / error / empty 를 붙여 각 상태를 볼 수 있다.
@@ -96,7 +97,7 @@ export function LocationScreen() {
       );
       // 성공 토스트는 띄우지 않는다. 별 색·"고정" 글자·순서가 바로 바뀌어 결과가 눈앞에 보인다
     } catch {
-      toast("고정하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
+      toast("고정하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요", "notice");
     } finally {
       setFavoritePendingId(null);
     }
@@ -109,7 +110,10 @@ export function LocationScreen() {
   function handleLocate() {
     if (locating) return;
     if (!("geolocation" in navigator)) {
-      toast("이 기기에서는 현재 위치를 찾을 수 없어요. 자주 가는 장소에서 골라 주세요");
+      toast(
+        "이 기기에서는 현재 위치를 찾을 수 없어요. 자주 가는 장소에서 골라 주세요",
+        "notice",
+      );
       return;
     }
 
@@ -126,7 +130,7 @@ export function LocationScreen() {
             lng: coords.longitude,
           });
         } catch {
-          toast("현재 위치의 주소를 찾지 못했어요. 잠시 뒤 다시 눌러 주세요");
+          toast("현재 위치의 주소를 찾지 못했어요. 잠시 뒤 다시 눌러 주세요", "notice");
         } finally {
           setLocating(false);
         }
@@ -137,6 +141,7 @@ export function LocationScreen() {
           error.code === error.PERMISSION_DENIED
             ? "위치 권한이 꺼져 있어요. 휴대폰 설정에서 권한을 켜거나 자주 가는 장소에서 골라 주세요"
             : "현재 위치를 찾지 못했어요. 잠시 뒤 다시 누르거나 자주 가는 장소에서 골라 주세요",
+          "notice",
         );
       },
       { enableHighAccuracy: true, timeout: 10000 },
@@ -153,11 +158,14 @@ export function LocationScreen() {
         longitude: picked.lng,
         location_label: picked.label,
       });
-      // "이 위치로 설정"을 눌렀으니 토스트도 같은 말을 쓴다. 토스트는 앱 전체에 걸려 있어 홈에서도 보인다
-      toast("위치를 설정했어요");
+      // "이 위치로 정하기"를 눌렀으니 토스트도 같은 말을 쓴다. 토스트는 앱 전체에 걸려 있어 홈에서도 보인다
+      toast("위치를 정했어요");
       router.push("/owner");
     } catch {
-      toast("위치를 설정하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요");
+      toast(
+        "위치를 정하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요",
+        "notice",
+      );
       setSaving(false);
     }
   }
@@ -295,7 +303,7 @@ export function LocationScreen() {
             }
           }}
         >
-          이 위치로 설정
+          이 위치로 정하기
         </Button>
       </div>
     </main>

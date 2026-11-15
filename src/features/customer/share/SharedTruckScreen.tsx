@@ -162,15 +162,19 @@ function RestNotice({ truck }: { truck: SharedTruck }) {
 
 /**
  * 오픈 알림 — **1차 범위가 아니다(product-rules.md "알림").**
- * 버튼은 두되 비활성으로 두고 "준비 중"을 글자로 보인다. 구독 API는 부르지 않는다.
+ * 버튼은 두되 비활성으로 두고, 아직 준비하고 있다는 말을 **버튼 아래에** 글자로 보인다. 구독 API는 부르지 않는다.
+ *
+ * 전에는 "준비 중" 칩을 비활성 버튼 안에 넣었다(2026-11-11 고침). 두 가지가 걸렸다.
+ * - 비활성 버튼은 통째로 흐려져서(불투명도 0.4) 칩 대비가 1.72:1이었다. 규칙은 "준비 중임이 보이게"다
+ * - 위쪽 영업 상태 배지도 "준비 중"이다. 같은 화면에서 같은 말이 트럭 상태와 기능 상태를 둘 다 뜻했다
  */
 function NotifyButton() {
   return (
     <footer className={styles.footer}>
       <Button block variant="secondary" disabled>
         🔔 오픈 알림 받기
-        <span className={styles.soon}>준비 중</span>
       </Button>
+      <p className={styles.soonNote}>오픈 알림은 아직 준비하고 있는 기능이에요</p>
     </footer>
   );
 }
