@@ -60,7 +60,7 @@
 
   padding: var(--space-1) var(--space-3);
 
-  font: var(--font-body);
+  font: var(--font-body-strong);
   color: var(--text-default);
 
   background: var(--bg-surface);
@@ -154,7 +154,9 @@
   word-break: keep-all;
 }
 
+/* 정한 값은 굵게. 라벨("위치")보다 값("행복아파트 정문 앞")이 먼저 읽혀야 한다 */
 .rowValue {
+  font: var(--font-body-strong);
   color: var(--brand-primary-text);
 }
 

@@ -8,7 +8,8 @@
   min-height: var(--touch-target-min);
   padding: var(--space-3) var(--space-4);
 
-  font: var(--font-body);
+  /* 버튼 글자는 본문 크기를 굵게 쓴다. 보통 굵기면 본문 속 글자와 구별이 안 된다 */
+  font: var(--font-body-strong);
   text-align: center;
 
   border: 1px solid transparent;

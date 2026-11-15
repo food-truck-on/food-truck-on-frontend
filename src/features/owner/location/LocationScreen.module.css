@@ -241,7 +241,7 @@
 }
 
 .placeName {
-  font: var(--font-body);
+  font: var(--font-body-strong);
   color: var(--text-default);
   word-break: keep-all;
 }

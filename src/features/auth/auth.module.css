@@ -68,7 +68,7 @@
   min-height: var(--touch-target-min);
   padding: var(--space-3) var(--space-4);
 
-  font: var(--font-body);
+  font: var(--font-body-strong);
   color: var(--text-on-brand);
   text-align: center;
 

@@ -96,46 +96,76 @@
   /* ---------------------------------------------------------------
    * 타이포그래피
    *
-   * 본문 서체는 주아체. **Regular 한 가지 굵기뿐이다.**
-   * font-weight: bold 를 쓰지 마라. 가짜 굵기(faux bold)가 적용되거나 렌더링이 깨진다.
-   * 위계는 크기와 색으로만 만든다.
+   * 서체는 둘이다(2026-11-15, 전에는 주아체 하나였다. 근거는 docs/design.md "서체").
+   *   제목용  주아체        — 화면 대표 제목, 섹션 제목. 이 서비스의 얼굴이 되는 글자에만 쓴다
+   *   본문용  프리텐다드    — 그 밖의 전부. 설명·가격·주소·버튼·토스트처럼 읽는 글자
    *
-   * 쓰는 법: font: var(--font-title);
-   * font 단축 속성이라 font-weight가 normal로 초기화된다 — 이게 의도한 동작이다.
-   * 크기나 행간만 따로 필요하면 --font-*-size / --font-*-line 을 쓴다.
+   * 굵기는 **토큰에 들어 있다.** font-weight를 직접 쓰지 마라.
+   *   쓰는 법: font: var(--font-body);   굵은 본문이 필요하면 font: var(--font-body-strong);
+   *   font 단축 속성이라 굵기·크기·행간·서체가 한 번에 정해진다.
+   *   주아체는 Regular 하나뿐이라 제목 토큰의 굵기는 400이다. 굵게 하면 가짜 굵기가 적용된다.
+   *   크기나 행간만 따로 필요하면 --font-*-size / --font-*-line 을 쓴다.
+   *
+   * 행간 (2026-11-15에 실무 기준과 대조함. 근거는 design-system.md "타이포그래피")
+   *   18px 이하 글자는 여러 줄로 읽히는 글이라 행간을 글자 크기의 1.5배 안팎으로 둔다.
+   *   토스 디자인 시스템은 18px 이하를 전부 1.5배, 정부 디자인 시스템(KRDS)은 150% 이상으로 정해 두었다.
+   *     caption 14/20(1.43) → 14/22(1.57)     label 12/16(1.33) → 12/18(1.5)
+   *   제목(22·28px)은 1.3배 안팎이 일반적이라 그대로 뒀다.
+   *
+   * 자간은 정하지 않는다(0 = 서체에 들어 있는 간격 그대로).
+   *   두 디자인 시스템 모두 본문 자간이 0이고, 프리텐다드도 자간을 따로 맞추지 않고 쓰게 만든 서체다.
+   *   여기에 letter-spacing을 더하지 마라.
    * --------------------------------------------------------------- */
 
-  --font-family-base: var(--font-jua), sans-serif;
+  /* 제목용. --font-jua는 app/layout.tsx에서 next/font가 넣어 준다 */
+  --font-family-display: var(--font-jua), sans-serif;
+  /* 본문용. 프리텐다드는 app/layout.tsx의 <link>로 불러온다. 못 불러오면 기기의 기본 한글 서체로 보인다 */
+  --font-family-base:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic",
+    sans-serif;
+
+  /* 굵기 — 세 가지만 쓴다. 여기 말고 다른 곳에서 숫자를 쓰지 마라 */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-strong: 600;
 
   --font-display-size: 28px;
   --font-display-line: 36px;
-  --font-display: var(--font-display-size) / var(--font-display-line)
-    var(--font-family-base);
+  --font-display: var(--font-weight-regular) var(--font-display-size) /
+    var(--font-display-line) var(--font-family-display);
 
   --font-title-size: 22px;
   --font-title-line: 30px;
-  --font-title: var(--font-title-size) / var(--font-title-line)
-    var(--font-family-base);
+  --font-title: var(--font-weight-regular) var(--font-title-size) /
+    var(--font-title-line) var(--font-family-display);
 
+  /* 카드 제목 · 메뉴명 · 작은 섹션 제목. 본문용 서체를 굵게 써서 제목 구실을 한다 */
   --font-subtitle-size: 18px;
   --font-subtitle-line: 26px;
-  --font-subtitle: var(--font-subtitle-size) / var(--font-subtitle-line)
-    var(--font-family-base);
+  --font-subtitle: var(--font-weight-strong) var(--font-subtitle-size) /
+    var(--font-subtitle-line) var(--font-family-base);
 
   --font-body-size: 16px;
   --font-body-line: 24px;
-  --font-body: var(--font-body-size) / var(--font-body-line)
-    var(--font-family-base);
+  --font-body: var(--font-weight-regular) var(--font-body-size) /
+    var(--font-body-line) var(--font-family-base);
+  /* 버튼 글자 · 상태 배지 · 목록에서 고르는 이름처럼 본문 크기인데 눈에 띄어야 하는 글자 */
+  --font-body-strong: var(--font-weight-strong) var(--font-body-size) /
+    var(--font-body-line) var(--font-family-base);
 
   --font-caption-size: 14px;
-  --font-caption-line: 20px;
-  --font-caption: var(--font-caption-size) / var(--font-caption-line)
-    var(--font-family-base);
+  --font-caption-line: 22px;
+  --font-caption: var(--font-weight-regular) var(--font-caption-size) /
+    var(--font-caption-line) var(--font-family-base);
+  /* 선택된 탭 · 남은 시간처럼 작은 글자인데 강조해야 하는 것 */
+  --font-caption-strong: var(--font-weight-strong) var(--font-caption-size) /
+    var(--font-caption-line) var(--font-family-base);
 
   --font-label-size: 12px;
-  --font-label-line: 16px;
-  --font-label: var(--font-label-size) / var(--font-label-line)
-    var(--font-family-base);
+  --font-label-line: 18px;
+  --font-label: var(--font-weight-medium) var(--font-label-size) /
+    var(--font-label-line) var(--font-family-base);
 
   /* ---------------------------------------------------------------
    * 레이아웃

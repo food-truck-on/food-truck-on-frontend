@@ -2,12 +2,16 @@
  * 공유 링크 페이지 (/t/:slug)
  * 피그마 손님 `02 트럭 상세 시트`를 한 장으로 펼친 모양. 시트처럼 흰 면 위에 올린다.
  * 고정 폭·고정 높이를 쓰지 않는다. 360px에서 트럭 이름·메뉴명이 길어지면 줄바꿈으로 늘어난다.
+ *
+ * 덩어리 사이 간격은 사장님 화면과 같은 --space-4다(2026-11-15, 전에는 --space-5).
+ * 상태 배지를 키우고 알림 안내를 버튼 아래로 빼면서 360×780 한 장을 8px 넘겼다.
+ * 손님이 스크롤 없이 한 장에서 다 보게 하려고 간격을 한 단계 줄였다.
  */
 .screen {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
 
   padding: var(--space-5) var(--space-4);
 
@@ -40,7 +44,7 @@
 
   padding: var(--space-1) var(--space-3);
 
-  font: var(--font-body);
+  font: var(--font-body-strong);
   color: var(--text-default);
   border-radius: var(--space-4);
 }
@@ -83,7 +87,7 @@
 }
 
 .remaining {
-  font: var(--font-caption);
+  font: var(--font-caption-strong);
   color: var(--brand-primary-text);
 }
 
@@ -145,7 +149,7 @@
   min-height: var(--touch-target-min);
   padding: var(--space-3) var(--space-4);
 
-  font: var(--font-body);
+  font: var(--font-body-strong);
   color: var(--text-on-brand);
   text-align: center;
 
