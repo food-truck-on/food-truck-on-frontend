@@ -3,7 +3,7 @@ import {
   shareDescription,
   statusLabel,
 } from "@/features/customer/share/shareText";
-import { getSharedTruck } from "@/lib/mock/sharedTrucks";
+import { getSharedTruck } from "@/lib/api/customer";
 import { loadJuaSubset } from "@/lib/og/font";
 import { scaled, token } from "@/lib/og/tokens";
 import { formatHours } from "@/lib/time";
@@ -32,9 +32,14 @@ export default async function Image({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const truck = await getSharedTruck(slug, "normal");
+  /*
+   * 서버가 답하지 않아도 이미지는 그린다(2026-11-17, 실제 API 연결).
+   * 여기서 오류를 내면 카카오톡 미리보기에 깨진 이미지가 붙는다. 백엔드 서버가 잠들어 있으면 실제로 그렇게 된다.
+   * 트럭 정보를 모르는 채로는 상태를 지어낼 수 없으니, 없는 슬러그와 같은 서비스 이름 카드로 대신한다.
+   */
+  const truck = await getSharedTruck(slug, "normal").catch(() => null);
 
-  // 없는 슬러그 — 서비스 이름만 그린다
+  // 없는 슬러그 · 불러오지 못함 — 서비스 이름만 그린다
   if (!truck) {
     return render({
       title: siteName,
