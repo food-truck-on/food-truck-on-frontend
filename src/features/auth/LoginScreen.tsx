@@ -43,6 +43,14 @@ export function LoginScreen({ mock }: { mock: string | null }) {
     window.location.assign(authorizeUrl(provider, mock));
   }
 
+  /*
+   * 이미 로그인한 사람에게는 로그인 화면을 그리지 않는다. 위 effect가 홈으로 보내는 건 화면을 한 번 그린 뒤라,
+   * 그 사이 카카오·구글 버튼이 잠깐 비쳤다가 사라졌다(2026-11-17).
+   * 확인 중(null)일 때는 그대로 그린다. 로그인 안 한 사람이 대부분인 화면이라, 그때까지 비워 두면
+   * 서버가 그려 준 화면을 버리고 빈 화면부터 보게 된다(사장님 화면 owner/layout.tsx와 반대로 정한 이유).
+   */
+  if (signedIn) return null;
+
   return (
     <main className={styles.screen}>
       <section className={styles.hero}>
