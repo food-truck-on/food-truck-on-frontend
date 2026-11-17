@@ -25,6 +25,8 @@ const groups = [
     title: "사장님 (로그인 필요)",
     links: [
       ["/owner", "사장님 홈"],
+      ["/owner?truck=none", "가게 이름 등록 — 트럭 없는 사장님 (홈 → 등록 화면)"],
+      ["/owner/setup?truck=taken", "가게 이름 등록 — 등록하면 '이미 등록됨'(409)"],
       ["/owner/location", "위치 정하기"],
       ["/owner/menu", "메뉴 정하기"],
     ],

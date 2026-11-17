@@ -31,6 +31,7 @@ export type SessionStatus = "preparing" | "open" | "closed";
  *
  * - share_url: 명세 안에서도 표기가 달라 수정을 요청해 둔 상태다. 지금은 명세 그대로 문자열로 둔다
  * - today_session: 오늘 세션이 아직 없을 때 null이 오는지 명세에 없다. 확인 필요
+ * - 트럭이 없는 사장님에게는 404가 온다. 목데이터는 그 경우 null을 돌려준다(trucks.ts)
  */
 export type MyFoodTruck = {
   id: number;
@@ -42,6 +43,12 @@ export type MyFoodTruck = {
     menu_count: number;
   };
 };
+
+/**
+ * POST /api/v1/food-trucks — 푸드트럭 등록. 요청 본문은 `{ name }` 하나다.
+ * 응답에 today_session은 없다.
+ */
+export type CreateFoodTruckResult = Pick<MyFoodTruck, "id" | "name" | "share_url">;
 
 /** 3-1. GET /api/v1/food-trucks/:foodTruckId/locations — 자주 가는 장소 (배열의 한 칸) */
 export type SavedLocation = {

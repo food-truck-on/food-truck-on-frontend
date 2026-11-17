@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button/Button";
 import { ConfirmDialog } from "@/components/ConfirmDialog/ConfirmDialog";
@@ -34,10 +35,14 @@ type State =
  *   open       → 15. 영업 중. 공유 링크와 마감 버튼이 보인다
  *   closed     → 18. 오늘 영업 끝 (ClosedNotice)
  *
+ * 트럭이 없는 사장님(가입만 하고 가게 이름을 등록하지 않음)은 가게 이름 등록(/owner/setup)으로 보낸다.
+ * 로그인 응답의 is_new_user가 아니라 **트럭이 있는지**로만 판단한다(2026-11-17).
+ *
  * 주소 끝에 ?session=none|preparing|open|closed 로 각 상태를,
- * ?mock=slow|error 로 로딩·에러를 볼 수 있다.
+ * ?mock=slow|error 로 로딩·에러를, ?truck=none 으로 트럭 없는 사장님을 볼 수 있다.
  */
 export function HomeScreen() {
+  const router = useRouter();
   const toast = useToast();
   const [state, setState] = useState<State>({ kind: "loading" });
   /** 오픈·마감 요청이 진행 중. 연타로 두 번 보내지 않게 막는다 */
@@ -61,11 +66,17 @@ export function HomeScreen() {
         getMyFoodTruck(),
         getTodaySession(),
       ]);
+      if (!truck) {
+        // 트럭이 없으면 보여 줄 홈이 없다. 스켈레톤을 그대로 둔 채 등록 화면으로 보낸다.
+        // 뒤로가기로 빈 홈에 돌아오지 않게 기록을 바꿔 넣는다
+        router.replace("/owner/setup");
+        return;
+      }
       setState({ kind: "success", truck, session });
     } catch {
       setState({ kind: "error" });
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -204,6 +215,8 @@ export function HomeScreen() {
   return (
     <main className={styles.screen}>
       <header className={isOpen ? styles.headerOpen : styles.header}>
+        {/* 내 가게 이름. 방금 등록한 이름이 맞게 들어갔는지 홈에서 바로 보인다(2026-11-17) */}
+        <p className={styles.truckName}>{truck.name}</p>
         {isOpen ? (
           <p className={styles.openBadge}>
             <span className={styles.openDot} aria-hidden="true" />
@@ -454,6 +467,7 @@ function HomeSkeleton() {
   return (
     <main className={styles.screen} aria-busy="true">
       <div className={styles.header} aria-hidden="true">
+        <span className={styles.skeletonLine} />
         <span className={styles.skeletonLine} />
         <span className={styles.skeletonLineWide} />
       </div>

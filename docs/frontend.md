@@ -58,6 +58,7 @@ App Router와 충돌한다. 라우트 화면은 전부 `src/app/` 아래에 둔�
 | `/owner` | `app/owner/page.tsx` | 사장님 홈. 로그인 필수. 하단 탭 `home` |
 | `/owner/location` | `app/owner/location/page.tsx` | 위치 정하기. 하단 탭 `location` |
 | `/owner/menu` | `app/owner/menu/page.tsx` | 메뉴 정하기. 하단 탭 `menu` |
+| `/owner/setup` | `app/owner/setup/page.tsx` | 가게 이름 등록. 트럭이 없는 사장님만 온다 — 홈이 보낸다. 하단 탭 없음 (2026-11-17 추가) |
 | `/nearby` | `app/nearby/page.tsx` | 손님 — 주변 트럭 목록 |
 | `/t/:slug` | `app/t/[slug]/page.tsx` | **공유 링크로 들어오는 단일 트럭 페이지. 로그인 불필요** |
 | `/dev/components` | `app/dev/components/page.tsx` | 공통 컴포넌트·토큰 확인용. **개발 전용 — 배포 전 폴더째 지운다** |

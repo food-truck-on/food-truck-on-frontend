@@ -36,6 +36,14 @@
   background: var(--status-open-bg);
 }
 
+/* 내 가게 이름. 20자까지 들어온다 — 길면 어절 단위로 줄바꿈한다 */
+.truckName {
+  font: var(--font-body-strong);
+  color: var(--text-default);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
 .date {
   font: var(--font-caption);
   color: var(--brand-primary-text);
