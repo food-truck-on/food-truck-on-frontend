@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { mockFetch, type MockScenario } from "./mockFetch";
 import type { SharedTruck } from "./types";
 
@@ -17,6 +16,9 @@ import type { SharedTruck } from "./types";
  *
  * 사장님 화면 목데이터(trucks.ts · sessions.ts)와는 따로 논다. 사장님이 오픈해도 여기는 안 바뀐다.
  * 사장님 쪽은 브라우저 메모리에 있고, 이 페이지는 서버에서 그려지기 때문이다. 연동하면 서버 한 곳으로 모인다.
+ *
+ * **여기 없는 슬러그는 실제 API로 간다(2026-11-17).** 화면은 이 파일이 아니라 lib/api/customer.ts의
+ * getSharedTruck을 부르고, 그 함수가 슬러그를 보고 목데이터와 실제 API를 가른다.
  */
 const sharedTrucks: Record<string, SharedTruck> = {
   "takoyaki-dalin": {
@@ -82,19 +84,22 @@ function restDay(id: number, name: string): SharedTruck {
   };
 }
 
+/** 목데이터에 있는 슬러그인가. 있으면 실제 API를 부르지 않는다(lib/api/customer.ts) */
+export function isMockSharedSlug(slug: string): boolean {
+  return Object.hasOwn(sharedTrucks, slug);
+}
+
 /**
- * 6-2. GET /api/v1/customer/food-trucks/:shareSlug 자리. 없는 슬러그면 null.
- *
- * `cache`로 감싸서 한 요청 안에서는 한 번만 부른다.
- * 페이지 본문과 카카오톡 미리보기(generateMetadata)가 같은 데이터를 쓰기 때문이다.
+ * 6-2. GET /api/v1/customer/food-trucks/:shareSlug 의 목데이터. 없는 슬러그면 null.
  *
  * @param scenario 서버에는 주소창이 없어서 페이지가 ?mock= 값을 받아 넘긴다.
  *                 ?mock=empty 는 "오늘은 쉬어요"를 보여준다
  */
-export const getSharedTruck = cache(
-  (slug: string, scenario: MockScenario): Promise<SharedTruck | null> => {
-    const truck = sharedTrucks[slug] ?? null;
-    const rest = truck ? restDay(truck.id, truck.name) : null;
-    return mockFetch(truck, rest, scenario);
-  },
-);
+export function getMockSharedTruck(
+  slug: string,
+  scenario: MockScenario,
+): Promise<SharedTruck | null> {
+  const truck = isMockSharedSlug(slug) ? sharedTrucks[slug] : null;
+  const rest = truck ? restDay(truck.id, truck.name) : null;
+  return mockFetch(truck, rest, scenario);
+}

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { SharedTruckScreen } from "@/features/customer/share/SharedTruckScreen";
 import { shareDescription, shareTitle } from "@/features/customer/share/shareText";
 import { parseScenario } from "@/lib/mock/mockFetch";
-import { getSharedTruck } from "@/lib/mock/sharedTrucks";
+import { getSharedTruck } from "@/lib/api/customer";
 import { siteName } from "@/lib/site";
 
 /*
@@ -18,7 +18,9 @@ import { siteName } from "@/lib/site";
  *   없음  not-found.tsx  잘못된 링크
  *   성공  이 파일         영업 중 · 준비 중 · 영업 종료 · 오늘은 쉬어요
  *
- * 목데이터 확인: 주소 끝에 ?mock=slow | error | empty (lib/mock/mockFetch.ts)
+ * 데이터는 lib/api/customer.ts에서 온다. 목 슬러그 네 개(lib/mock/sharedTrucks.ts)는 목데이터,
+ * 그 밖의 슬러그는 실제 API다(2026-11-17).
+ * 목데이터 확인: 목 슬러그 주소 끝에 ?mock=slow | error | empty (lib/mock/mockFetch.ts)
  */
 
 /**
