@@ -2,32 +2,33 @@ import { mockFetch } from "./mockFetch";
 import type { LocationFavoriteResult, SavedLocation } from "./types";
 
 /**
- * 목데이터 원본. 이름·주소는 피그마 `02 위치 정하기 / 기본`과 같다.
- * 좌표는 지도에 핀이 서로 가깝게 찍히도록 서울 마포구 한 동네로 잡았다. 실제 장소가 아니다.
+ * 목데이터 원본. 지도가 첫 장소를 가운데에 두므로 홍대입구역 둘레의 실제 지명으로 잡았다(2026-11-24).
+ * 피그마 `02 위치 정하기 / 기본`의 "행복아파트 정문" 같은 가상 지명은 지도 위 동네와 맞지 않아 바꿨다.
+ * 좌표는 근삿값이다. `address`는 그대로 손님에게 보이는 위치 문구가 되므로 "~앞"처럼 찾아올 수 있게 쓴다.
  */
 let savedLocations: SavedLocation[] = [
   {
     id: 1,
-    name: "행복아파트 정문",
-    address: "행복아파트 정문 앞",
-    latitude: 37.5563,
-    longitude: 126.9236,
+    name: "홍대입구역 3번 출구",
+    address: "홍대입구역 3번 출구 앞",
+    latitude: 37.5577,
+    longitude: 126.9248,
     is_favorite: false,
   },
   {
     id: 2,
-    name: "중앙공원 주차장",
-    address: "중앙공원 주차장 입구",
-    latitude: 37.5585,
-    longitude: 126.9265,
+    name: "연트럴파크 입구",
+    address: "경의선숲길 연남동 입구",
+    latitude: 37.5592,
+    longitude: 126.9236,
     is_favorite: false,
   },
   {
     id: 3,
-    name: "시장 입구",
-    address: "전통시장 정문 앞",
-    latitude: 37.5541,
-    longitude: 126.921,
+    name: "홍대 걷고싶은거리",
+    address: "걷고싶은거리 버스킹존 옆",
+    latitude: 37.5548,
+    longitude: 126.9221,
     is_favorite: false,
   },
 ];

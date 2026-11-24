@@ -24,7 +24,7 @@ const readySession: TodaySession = {
   id: 1,
   date: todayKst(),
   status: "preparing",
-  location_label: "행복아파트 정문 앞",
+  location_label: "홍대입구역 3번 출구 앞",
   menu_count: 3,
   // 명세 예시가 이미 "외 2개"로 조합된 문구다. 수정 요청을 걸어 둔 상태라 명세 그대로 둔다
   menus: [{ id: 1, name: "타코야끼 8알 외 2개" }],

@@ -24,7 +24,7 @@ let myFoodTruck: MyFoodTruck | null = {
   share_url: MOCK_SHARE_URL,
   today_session: {
     status: "preparing",
-    location_label: "행복아파트 정문 앞",
+    location_label: "홍대입구역 3번 출구 앞",
     menu_count: 3,
   },
 };
