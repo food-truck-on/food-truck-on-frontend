@@ -51,14 +51,20 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  /*
+   * suppressHydrationWarning — 브라우저 확장 프로그램이 서버 HTML이 화면에 붙기 전에
+   * <html> · <body>에 속성을 끼워 넣으면 React가 "서버와 다르다"고 경고한다(2026-11-26).
+   * 우리 코드가 만든 차이가 아니고 배포된 화면에는 영향이 없어 이 두 태그에서만 끈다.
+   * 이 표시는 그 태그 자신의 속성에만 듣는다. 안쪽 화면의 불일치는 그대로 경고된다.
+   */
   return (
-    <html lang="ko" className={jua.variable}>
+    <html lang="ko" className={jua.variable} suppressHydrationWarning>
       <head>
         {/* 서체 조각을 받을 서버와 미리 연결해 둔다. 첫 글자가 뜨는 시간이 줄어든다 */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="stylesheet" href={PRETENDARD_CSS} />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <div className="app-shell">
           {/* 어느 화면에서든 useToast()로 토스트를 띄울 수 있게 앱 전체를 감싼다 */}
           <ToastProvider>{children}</ToastProvider>
