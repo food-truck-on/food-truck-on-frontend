@@ -18,6 +18,7 @@ import type { MyFoodTruck, TodaySession } from "@/lib/mock/types";
 import { shareLinkFrom, sharePathFrom } from "@/lib/site";
 import { formatHours as formatHoursText } from "@/lib/time";
 import { HoursSheet } from "./HoursSheet";
+import { LogoutButton } from "./LogoutButton";
 import { OpenDoneSheet } from "./OpenDoneSheet";
 import styles from "./HomeScreen.module.css";
 
@@ -183,6 +184,10 @@ export function HomeScreen() {
   if (state.kind === "error") {
     return (
       <main className={styles.screen}>
+        {/* 홈을 못 불러와도 나갈 수는 있어야 한다 */}
+        <div className={styles.topBar}>
+          <LogoutButton />
+        </div>
         <section className={styles.message} role="alert">
           <h1 className={styles.messageTitle}>오늘 영업 정보를 불러오지 못했어요</h1>
           <p className={styles.messageDesc}>
@@ -215,8 +220,12 @@ export function HomeScreen() {
   return (
     <main className={styles.screen}>
       <header className={isOpen ? styles.headerOpen : styles.header}>
-        {/* 내 가게 이름. 방금 등록한 이름이 맞게 들어갔는지 홈에서 바로 보인다(2026-11-17) */}
-        <p className={styles.truckName}>{truck.name}</p>
+        <div className={styles.headerTop}>
+          {/* 내 가게 이름. 방금 등록한 이름이 맞게 들어갔는지 홈에서 바로 보인다(2026-11-17) */}
+          <p className={styles.truckName}>{truck.name}</p>
+          {/* 설정·로그아웃은 탭이 아니다. 홈 상단 아이콘으로 둔다(design-system.md BottomNav) */}
+          <LogoutButton />
+        </div>
         {isOpen ? (
           <p className={styles.openBadge}>
             <span className={styles.openDot} aria-hidden="true" />
@@ -435,6 +444,10 @@ function SettingRow({
 function ClosedNotice({ session }: { session: TodaySession }) {
   return (
     <section className={styles.closed}>
+      {/* 마감한 뒤에 가장 자주 하는 일이 앱을 닫는 것이다. 여기서도 로그아웃할 수 있다 */}
+      <div className={styles.closedTop}>
+        <LogoutButton inverse />
+      </div>
       <p className={styles.closedIcon} aria-hidden="true">
         🌙
       </p>

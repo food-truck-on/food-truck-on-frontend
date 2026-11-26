@@ -36,8 +36,18 @@
   background: var(--status-open-bg);
 }
 
+/* 가게 이름 + 로그아웃 아이콘 한 줄. 이름이 길어지면 이름만 줄바꿈되고 아이콘은 오른쪽에 남는다 */
+.headerTop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 /* 내 가게 이름. 20자까지 들어온다 — 길면 어절 단위로 줄바꿈한다 */
 .truckName {
+  flex: 1;
+  min-width: 0;
+
   font: var(--font-body-strong);
   color: var(--text-default);
   word-break: keep-all;
@@ -288,6 +298,18 @@
   background: var(--bg-inverse);
 }
 
+/*
+ * 로그아웃 아이콘 자리. 밝은 머리말과 같은 높이(위에서 --space-5)에 오도록
+ * .closed의 위쪽 여백(--space-7)에서 모자란 만큼 끌어올린다
+ */
+.closedTop {
+  display: flex;
+  justify-content: flex-end;
+  align-self: stretch;
+
+  margin-top: calc((var(--space-7) - var(--space-5)) * -1);
+}
+
 .closedIcon {
   font: var(--font-display);
 }
@@ -350,6 +372,12 @@
 /* ---------------------------------------------------------------
  * 에러
  * --------------------------------------------------------------- */
+
+/* 에러 화면의 로그아웃 아이콘 자리 */
+.topBar {
+  display: flex;
+  justify-content: flex-end;
+}
 
 .message {
   display: flex;

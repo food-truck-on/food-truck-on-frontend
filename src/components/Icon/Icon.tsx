@@ -2,7 +2,8 @@ import styles from "./Icon.module.css";
 
 /**
  * `public/icons/`에 있는 파일 이름. 피그마에서 내보낸 SVG를 그대로 넣어 둔 것이다.
- * `alert`(동그라미 안 느낌표)만 피그마를 쓸 수 없어 직접 그렸다(2026-11-11). 피그마가 돌아오면 맞춘다.
+ * `alert`(동그라미 안 느낌표)와 `logout`(문 밖으로 나가는 화살표)은 피그마에 없어 직접 그렸다
+ * (2026-11-11, 2026-11-26). 피그마가 돌아오면 맞춘다.
  */
 export type IconName =
   | "pin"
@@ -11,7 +12,8 @@ export type IconName =
   | "check"
   | "plus"
   | "history"
-  | "alert";
+  | "alert"
+  | "logout";
 
 type Props = {
   name: IconName;
